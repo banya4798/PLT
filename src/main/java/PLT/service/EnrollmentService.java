@@ -53,4 +53,6 @@ public interface EnrollmentService {
 	List<Enrollment_registrationVO> getEnrollMentList(Enrollment_registrationVO ervo) throws Exception;
 
 	List<FileVO> getEnrollMentFileList(Enrollment_registrationVO ervo) throws Exception;
+
+	FileVO getFileById(FileVO fileVO) throws Exception;
 }

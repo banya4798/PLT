@@ -493,7 +493,20 @@
 				                               <li>강의자료: </li>
 				                                    <c:forEach items="${files}" var="files">
 				                                    <c:if test="${enroll.registration_id == files.registration_id }">
-				                                    	 <p>${files.f_origin_name}<button>다운로드</button></p>
+				                                    	 <p>${files.f_origin_name}
+				                                    	 <a href="/PLT/download_material.do?registration_id=${files.registration_id}&f_id=${files.f_id}" target="_blank">
+				                                    	 	<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#0000F5">
+				                                    	 	<path d="M280-280h400v-80H280v80Zm200-120 160-160-56-56-64 62v-166h-80v166l-64-62-56 56 160 160Zm0 320q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227 93t-93 227q0 134 93 227t227 93Zm0-320Z"/></svg>
+														</a>
+														
+				                                    	 <a type="button" onclick="previewFile(${files.registration_id },${files.f_id })">
+				                                    	 	<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#EA33F7">
+				                                    	 	<path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h560q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H200Zm0-80h560v-480H200v480Zm280-80q-82 0-146.5-44.5T240-440q29-71 93.5-115.5T480-600q82 0 146.5 44.5T720-440q-29 71-93.5 115.5T480-280Zm0-60q56 0 102-26.5t72-73.5q-26-47-72-73.5T480-540q-56 0-102 26.5T306-440q26 47 72 73.5T480-340Zm0-100Zm0 60q25 0 42.5-17.5T540-440q0-25-17.5-42.5T480-500q-25 0-42.5 17.5T420-440q0 25 17.5 42.5T480-380Z"/></svg>
+														</a>
+														
+				                                    	 </p>
+				                                    	 <div id="fileDisplayArea-${files.f_id}"></div>
+				                                    	 
 				                                    </c:if>
 				                                    </c:forEach>
 				                            </c:when>
@@ -576,6 +589,36 @@ function logout(){
         alert("로그아웃을 취소하였습니다.");
     }
 }
+
+function previewFile(registration_id, f_id){
+    $.ajax({
+        url: "/PLT/download_material.do",
+        data: { registration_id: registration_id, f_id: f_id },
+        type: "GET",
+        xhrFields: {
+            responseType: 'blob' // 응답을 Blob으로 처리
+        },
+        success: function(blob, status, xhr) {
+            var fileType = xhr.getResponseHeader('Content-Type'); // mime 타입 가져오기
+            var url = URL.createObjectURL(blob); // blob url 생성
+
+            var fileDisplayArea = document.getElementById('fileDisplayArea-' + f_id); // 고유 id 사용
+            if (fileType.startsWith('image/')) {
+                fileDisplayArea.innerHTML = '<img src="' + url + '" alt="Uploaded Image" width="300" />';
+            } else if (fileType.startsWith('video/')) {
+                fileDisplayArea.innerHTML = '<video width="400" controls><source src="' + url + '" type="' + fileType + '"></video>';
+               
+            } else {
+                fileDisplayArea.innerHTML = '<p>지원하지 않는 파일 형식입니다.</p>';
+            }
+        },
+        error: function(xhr, status, error) {
+            alert('파일 다운로드 실패: ' + xhr.status + ' ' + error);
+        }
+    });
+}
+  	
+  
 </script>
 
     <!-- Bootstrap core JavaScript-->

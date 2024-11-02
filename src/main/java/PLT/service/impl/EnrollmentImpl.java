@@ -120,4 +120,9 @@ public class EnrollmentImpl implements EnrollmentService {
 	public List<FileVO> getEnrollMentFileList(Enrollment_registrationVO ervo) throws Exception {
 		return enrollmentDAO.getEnrollMentFileList(ervo);
 	}
+
+	@Override
+	public FileVO getFileById(FileVO fileVO) throws Exception {
+		return enrollmentDAO.getFileById(fileVO);
+	}
 }

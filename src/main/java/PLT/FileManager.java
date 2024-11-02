@@ -31,8 +31,8 @@ public class FileManager {
 
 	// 파일 확장자 및 파일 사이즈 유효성 검사
 	public boolean validateFile(MultipartFile file) {
-		String[] allowedExtensions = { "jpg", "png", "hwp", "pdf" };
-		long maxSize = 10 * 1024 * 1024; //10MB
+		String[] allowedExtensions = { "jpg", "png", "hwp", "pdf", "mp4" };
+		long maxSize = 500 * 1024 * 1024; //500MB
 
 		// 파일 크기 검사
 		if (file.getSize() > maxSize) {

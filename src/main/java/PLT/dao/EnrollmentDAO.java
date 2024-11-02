@@ -96,4 +96,8 @@ public class EnrollmentDAO extends EgovAbstractDAO {
 		return (List<FileVO>) list("getEnrollMentFileList", ervo);
 	}
 
+	public FileVO getFileById(FileVO fileVO) {
+		return (FileVO) select("getFileById", fileVO);
+	}
+
 }

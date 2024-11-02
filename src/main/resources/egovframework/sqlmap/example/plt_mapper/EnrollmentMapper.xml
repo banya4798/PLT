@@ -310,14 +310,27 @@
 	   course_id = #course_id# and user_id = #instructor_id#
 </select>
 
-
+ <!-- 강의에 해당하는 파일 가져오기 -->
 	<select id="getEnrollMentFileList" resultClass="fileVO">
 		select 
+			f_id,
 			f_origin_name,
 			registration_id
 		from file
 		where course_id = #course_id# and user_id = #instructor_id# and registration_id = #registration_id#;
 	</select>
 
+<!-- 강의자료 다운로드 -->
+	<select id="getFileById" resultClass="fileVO">
+		select
+			f_id,
+			f_name,
+			f_origin_name,
+			f_path,
+			f_size,
+			f_regdate
+		from file
+		where registration_id =#registration_id# and f_id =#f_id#
+	</select>
 
 </sqlMap>

@@ -1,6 +1,11 @@
 package PLT.controller;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.net.URLEncoder;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -8,6 +13,7 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.slf4j.Logger;
@@ -353,6 +359,45 @@ public class EnrollmentController {
 		}
 
 		return response;
+	}
+
+	@RequestMapping(value = "/download_material.do", method = RequestMethod.GET)
+	@ResponseBody
+	public void downloadMaterial(@RequestParam(value = "registration_id") int registration_id, @RequestParam(value = "f_id") int f_id, HttpServletResponse response) throws Exception {
+		FileVO fileVO = new FileVO();
+		fileVO.setF_id(f_id);
+		fileVO.setRegistration_id(registration_id);
+
+		FileVO fvo = enrollmentService.getFileById(fileVO);
+
+		if (fvo != null) {
+			// 파일 경로 설정
+			File file = new File(fvo.getF_path());
+			if (!file.exists()) {
+				response.sendError(HttpServletResponse.SC_NOT_FOUND);
+				return;
+			}
+
+			// MIME 타입 설정
+			String mimeType = Files.probeContentType(file.toPath());
+			response.setContentType(mimeType != null ? mimeType : "application/octet-stream");
+			response.setHeader("Content-Disposition", "attachment; filename=\"" + URLEncoder.encode(fvo.getF_origin_name(), "UTF-8") + "\"");
+			response.setContentLengthLong(file.length());
+
+			try (FileInputStream in = new FileInputStream(file); OutputStream out = response.getOutputStream()) {
+				byte[] buffer = new byte[4096];
+				int bytesRead;
+
+				while ((bytesRead = in.read(buffer)) != -1) {
+					out.write(buffer, 0, bytesRead);
+				}
+			} catch (IOException e) {
+				log.error("파일 다운로드 실패: " + fvo.getF_origin_name(), e);
+				response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "파일 다운로드 중 오류가 발생했습니다.");
+			}
+		} else {
+			response.sendError(HttpServletResponse.SC_NOT_FOUND, "파일 정보를 찾을 수 없습니다.");
+		}
 	}
 
 	// 강의 페이지 (학생 or 강사)
