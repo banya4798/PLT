@@ -1,0 +1,74 @@
+@charset "UTF-8";
+
+
+html{
+ scroll-behavior: smooth;
+ 
+}
+body{
+	margin : 10px;
+	padding : 0;
+	font-family: 'Cabin', sans-serif;
+    background-size: cover; /* 배경 이미지를 요소를 가득 채우도록 설정 */
+    background-position: center; /* 이미지를 중앙으로 정렬 */
+    background-repeat: no-repeat; /* 이미지를 반복하지 않도록 설정 */
+    height: 100vh; /* 전체 높이를 100%로 설정 */
+	
+}
+
+h1{
+	color:#000; 
+}
+p{
+	font-size:24px;
+	line-height:50px;	
+}
+
+.hr-dashed{
+	border : 0px;
+    border-top: 5px dashed #663399;
+}
+
+
+.nav{
+    display:flex;
+    justify-content: flex-end; 
+    list-style:none;
+    margin:0.2rem;
+}
+
+.nav a{
+	position:relative;
+	text-decoration:none;
+	padding: 0.1rem 0.5rem;
+	margin:15px;
+	padding-right: 15px;
+	color:#000;
+	text-transform: uppercase;
+}
+
+.nav a:hover{
+	color: goldenrod;
+}
+
+header .logo{
+	text-transform:uppercase;
+	letter-spacing:1px;
+	font-weight:bold;
+	font-size:35px;
+	text-decoration: none;
+	color : #000;
+	transition:1s;
+}
+
+
+.text-part{
+	width:65%;
+	height: 80%;
+}
+
+
+
+/* 스크롤 퀵메뉴 */
+
+/* ! 스크롤 퀵메뉴 */

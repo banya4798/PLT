@@ -1,0 +1,8 @@
+package PLT.controller;
+
+import org.springframework.stereotype.Controller;
+
+@Controller
+public class ModuleController {
+
+}

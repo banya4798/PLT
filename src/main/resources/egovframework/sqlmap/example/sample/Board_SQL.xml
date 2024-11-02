@@ -1,0 +1,813 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="BoardSpace">
+
+	<typeAlias alias="egovMap"
+		type="egovframework.rte.psl.dataaccess.util.EgovMap" />
+	<!-- <typeAlias alias="boardVO" type="Board.service.BoardVO"/> -->
+	<typeAlias alias="playboardVO"
+		type="Board.service.PlayBoardVO" />
+	<typeAlias alias="fileVO" type="Board.service.FileVO" />
+	<typeAlias alias="cm_fileVO" type="Board.service.Cm_fileVO" />
+	<typeAlias alias="userVO" type="Board.service.UserVO" />
+	<typeAlias alias="qnaVO" type="Board.service.QnaVO" />
+	<typeAlias alias="commentVO" type="Board.service.CommentVO" />
+	<typeAlias alias="loginLogVO" type="Board.service.LoginLogVO" />
+	<typeAlias alias="commonVO" type="Board.service.Common_code" />
+	<typeAlias alias="pageVO" type="Board.service.PageVO" />
+
+	<!-- ibatis는 #?#으로 -->
+
+	<!-- 글 목록 - 페이징, 검색 -->
+	<!-- <select id="boardDAO.BoardList" resultClass="boardVO"> <![CDATA[ SELECT 
+		num, service, title, part, to_char(regdate, 'YYYY-MM-DD') as regdate, file, 
+		vc FROM bbs ]]> <isNotEmpty property="search"> <isNotNull property="searchText"> 
+		where service = #search# and content LIKE '%' || #searchText# || '%' </isNotNull> 
+		</isNotEmpty> ORDER BY NUM DESC LIMIT 10 OFFSET #startIndex# </select> 전체 
+		게시글 수 <select id="boardDAO.boardTotal" parameterClass="boardVO" resultClass="int"> 
+		select count(*) from bbs <isNotEmpty property="search"> <isNotNull property="searchText"> 
+		where service = #search# and content LIKE '%' || #searchText# || '%' </isNotNull> 
+		</isNotEmpty> </select> 글 등록(저장하기) <insert id="boardDAO.boardWriteSave"> 
+		INSERT INTO bbs( service , title , part , content , file , parter , phone 
+		, email , regdate , vc) VALUES( #service# , #title# ,'해양SI' ,#content# ,#file# 
+		,'KIM' ,'010-2824-0652' ,'email@naver.com' ,now() ,0) </insert> 글 상세화면 <select 
+		id="boardDAO.boardDetail" resultClass="boardVO"> SELECT num, service, title, 
+		to_char(regdate, 'YYYY-MM-DD') as regdate, vc, parter, part, email, phone, 
+		content, file FROM bbs WHERE num=#num# </select> 글 수정 <update id="boardDAO.boardModifySave"> 
+		update bbs set service = #service#, title = #title#, content = #content#, 
+		file = #file# where num=#num# boardModify.jsp에서 전달 받기 </update> 글 삭제 <delete 
+		id="boardDAO.boardDelete"> delete from bbs where num=#num# </delete> 조회수 
+		증가 <update id="boardDAO.boardVC"> update bbs set vc = vc+1 where num=#num# 
+		</update> -->
+
+
+	<!-- \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ -->
+	<!-- \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ -->
+	<!-- \\\\\\\\\\[ 극지 동영상 게시판 쿼리] \\\\\\\\ -->
+	<!-- \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ -->
+	<!-- \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ -->
+
+
+	<!-- 극지 동영상 목록 -->
+	<!-- 목록 #번호(오름차순) -->
+	<select id="boardDAO.playList" resultClass="playboardVO">
+		select
+		b_seq,
+		title,
+		writer,
+		to_char(regdate, 'YYYY-MM-DD') as regdate,
+		ox
+		from
+		playboard
+		where 1=1
+		<isNotEmpty property="search">
+			and ox = #search#
+		</isNotEmpty>
+
+		<isNotNull property="searchText">
+			and title LIKE '%' || #searchText# ||
+			'%'
+		</isNotNull>
+		order by b_seq, regdate asc
+		limit 10 offset #startIndex#
+
+	</select>
+
+
+
+	<!-- 극지 동영상 목록 전체 게시글 수 -->
+	<select id="boardDAO.playTotal" parameterClass="playboardVO"
+		resultClass="int">
+
+		select count(*) from playboard
+		where 1=1
+		<isNotEmpty property="search">
+			and ox = #search#
+		</isNotEmpty>
+
+		<isNotNull property="searchText">
+			and title LIKE '%' || #searchText# ||
+			'%'
+		</isNotNull>
+
+	</select>
+
+	<!-- 극지 동영상 등록하기 -->
+	<update id="boardDAO.playWriteSave" parameterClass="playboardVO">
+		insert into
+		playboard(
+		title,
+		content,
+		writer,
+		regdate,
+		link_url
+		) values(
+		#title#,
+		#content#,
+		'admin',
+		now(),
+		#link_url#
+		)
+	</update>
+
+
+	<!-- 파일업로드 -->
+	<insert id="boardDAO.saveFile" parameterClass="fileVO">
+		INSERT INTO file
+		(b_seq, f_name,f_origin_name, f_path, f_size, writer,
+		regdate)
+		VALUES
+		((select max(b_seq) from playboard), #f_name#,#f_origin_name#,
+		#f_path#, #f_size#, 'admin', now())
+	</insert>
+
+	<!-- 상세페이지에 보여지기 위한 파일명 -->
+	<select id="boardDAO.fileName" resultClass="fileVO">
+		select f_origin_name,
+		b_seq from file where b_seq=#b_seq#
+	</select>
+
+
+	<!-- 극지 동영상 상세페이지 -->
+	<select id="boardDAO.playDetail" resultClass="playboardVO">
+		SELECT
+		b_seq,
+		title,
+		content,
+		writer,
+		to_char(regdate, 'YYYY-MM-DD') as regdate,
+		ox,
+		link_url
+		FROM playboard
+		WHERE b_seq=#b_seq#
+	</select>
+
+
+	<!-- 상세페이지 파일 다운로드 -->
+	<select id="boardDAO.fileDown" parameterClass="map"
+		resultClass="fileVO">
+		SELECT * FROM file
+		WHERE b_seq = #b_seq# AND f_origin_name
+		= #f_origin_name#
+	</select>
+
+
+
+	<!-- 파일 정보 가져오기 -->
+	<select id="boardDAO.getFile" resultClass="fileVO"
+		parameterClass="int">
+		select * from file where b_seq = #b_seq#
+	</select>
+
+	<!-- 파일 수정 -->
+	<update id="boardDAO.updateFile">
+		update file set
+		b_seq = #b_seq#,
+		f_name =#f_name#,
+		f_origin_name = #f_origin_name#,
+		f_path = #f_path#,
+		f_size = #f_size#,
+		writer = 'admin',
+		regdate = now()
+		where b_seq =#b_seq#
+	</update>
+
+	<!-- 극지 동영상 상세페이지 파일표시 -->
+	<select id="boardDAO.isFile" resultClass="fileVO">
+		select f_origin_name
+		from file
+		where b_seq=#b_seq#
+	</select>
+
+
+	<!-- 극지 동영상 수정하기 -->
+	<update id="boardDAO.playModifySave"
+		parameterClass="playboardVO">
+		update playboard set
+		title = #title#,
+		content = #content#,
+		link_url=#link_url#
+		where b_seq=#b_seq# <!-- boardModify.jsp에서 전달 받기 -->
+	</update>
+
+	<!-- 파일 삭제 쿼리 -->
+	<delete id="boardDAO.deleteFile" parameterClass="int">
+		DELETE FROM file
+		WHERE b_seq = #b_seq#
+	</delete>
+
+	<!-- 극지 동영상 글 삭제하기 -->
+	<delete id="boardDAO.playDelete" parameterClass="int">
+		delete from
+		playboard where b_seq=#b_seq#
+	</delete>
+
+
+
+
+	<!-- 이전글 -->
+	<select id="boardDAO.prevPost" resultClass="playboardVO">
+		select *
+		from
+		playboard
+		where b_seq &lt; #b_seq#
+		order by b_seq desc
+		limit 1
+	</select>
+
+	<!-- 다음글 -->
+	<select id="boardDAO.nextPost" resultClass="playboardVO">
+		select *
+		from
+		playboard
+		where b_seq &gt; #b_seq#
+		order by b_seq asc
+		limit 1
+	</select>
+
+	<!-- 영상여부 -->
+	<update id="boardDAO.setOX">
+		update playboard set ox = 'o' where b_seq = #b_seq#
+	</update>
+
+	<!-- \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ -->
+	<!-- \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ -->
+	<!-- \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ -->
+	<!-- \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ -->
+	<!-- \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ -->
+
+	<!--//////[ 회원가입 및 로그인 쿼리]////// -->
+
+
+	<!-- 회원가입 -->
+	<insert id="userDAO.joinAction">
+		insert into user_t(
+		u_name,
+		user_type,
+		u_year,
+		u_month,
+		u_day,
+		username,
+		password,
+		address,
+		detail_address,
+		privacy_agree,
+		regdate,
+		email,
+		certification_code
+		)
+		values (
+		#u_name#,
+		#user_type#,
+		#u_year#,
+		#u_month#,
+		#u_day#,
+		#username#,
+		#password#,
+		#address#,
+		#detail_address#,
+		#privacy_agree#,
+		now(),
+		#email#,
+		#certification_code#
+		)
+	</insert>
+
+	<!-- [사용자 ID 중복췤] -->
+	<select id="userDAO.duplication" resultClass="userVO">
+		select username
+		from user_t
+		where username = #username#
+	</select>
+
+	<!-- [사용자 로그인] -->
+	<select id="userDAO.loginSession" resultClass="userVO">
+		select
+		user_type,username,password,u_name
+		from user_t
+		where username=#username#
+	</select>
+
+	<insert id="insertLoginLog">
+		insert into loginlog (
+		u_id,
+		u_name,
+		user_type,
+		username,
+		logdate
+		)
+		values(
+		(select u_id from user_t where username=#username#),
+		#u_name#,
+		#user_type#,
+		#username#,
+		now()
+		)
+	</insert>
+	
+	<!-- 아이디 찾기 -->
+	<select id="find_ID" resultClass ="userVO">
+		select 
+			username, email 
+		from user_t 
+		where email = #email#
+		order by regdate desc
+	</select>
+
+	<!-- 비밀번호 찾기 -->
+	<select id="psFind" resultClass="String">
+		select password 
+		from user_t
+		where username=#username# 
+			and email=#email#
+			and certification_code = #certification_code#
+	</select>
+
+
+
+<!-- 비밀번호 찾기 시 이메일 인증 -->
+<select id="userDAO.certification" resultClass="userVO">
+ select 
+ 	u_id,username,email
+ from user_t 
+ where 
+  	username = #username# and email = #email#
+</select>
+
+<!--인증코드 DB에 저장 -->
+<update id="saveCertificationCode">
+	update user_t set certification_Code=#certification_Code#
+	where username=#username#
+</update>
+
+	<!-- \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ -->
+	<!-- \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ -->
+	<!-- \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ -->
+	<!-- \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ -->
+	<!-- \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ -->
+
+	<!-- Q&A 게시판 -->
+	<!-- 목록 페이지 -->
+	<select id="boardDAO.qnalist" resultClass="qnaVO">
+		select
+		row_number() over (order by qna_seq asc) as rownum,
+		qna_seq,
+		service,
+		title,
+		content,
+		writer,
+		proc_status,
+		qna_write_pw,
+		phone,
+		email,
+		open_close,
+		hit,
+		to_char(regdate, 'yyyy-mm-dd') as regdate,
+		u_id
+		from
+		qna_t
+
+		where 1=1  <!-- 기본적으로 모든 조건을 포함하는 역할 -->
+		<!-- search 필터 조건 -->
+		<isNotEmpty property="search">
+			and service = (
+			select code_name
+			from
+			common_code
+			where code = #search#
+			)
+		</isNotEmpty>
+
+		<!-- search2 필터 조건 -->
+		<isNotEmpty property="search2">
+			and proc_status = (
+			select code_name
+			from common_code
+			where code = #search2#
+			)
+		</isNotEmpty>
+
+		<!-- searchText 필터 조건 -->
+		<isNotNull property="searchText">
+			and title like '%' || #searchText# ||
+			'%'
+		</isNotNull>
+
+		order by rownum, regdate asc
+		limit 10 offset #startIndex#
+	</select>
+
+	<select id="boardDAO.common_search" resultClass="qnaVO">
+		select
+		group_code, code, code_name
+		from common_code
+		where group_code='SV_TYPE'
+	</select>
+
+	<select id="boardDAO.common_search2" resultClass="qnaVO">
+		select
+		group_code, code, code_name
+		from common_code
+		where group_code='PC_STATUS'
+	</select>
+
+	<select id="boardDAO.getCommonS01" resultClass="qnaVO">
+		select code, code_name
+		from common_code
+		where code= 'S01'
+	</select>
+
+	<select id="boardDAO.getCommonS02" resultClass="qnaVO">
+		select code, code_name
+		from common_code
+		where code= 'S02'
+	</select>
+
+	<select id="common_proc_complete" resultClass="String">
+		select code_name from common_code where code='P01'
+	</select>
+
+	<select id="common_proc_ing" resultClass="String">
+		select code_name from common_code where code='P02'
+	</select>
+
+	<update id="commproc_update">
+		update qna_t set proc_status = #proc_status# where qna_seq=#qna_seq#
+	</update>
+
+	<!-- QNA 목록 전체 게시글 수 -->
+	<select id="boardDAO.qnaTotal" parameterClass="qnaVO"
+		resultClass="int">
+
+		select count(*) from qna_t
+		where 1=1  <!-- 기본적으로 모든 조건을 포함하는 역할 -->
+		<!-- search 필터 조건 -->
+		<isNotEmpty property="search">
+			and service = (
+			select code_name
+			from
+			common_code
+			where code = #search#
+			)
+		</isNotEmpty>
+
+		<!-- search2 필터 조건 -->
+		<isNotEmpty property="search2">
+			and proc_status = (
+			select code_name
+			from common_code
+			where code = #search2#
+			)
+		</isNotEmpty>
+
+		<!-- searchText 필터 조건 -->
+		<isNotNull property="searchText">
+			and title like '%' || #searchText# ||
+			'%'
+		</isNotNull>
+	</select>
+
+	<!-- Q&A 등록하기 -->
+	<insert id="boardDAO.qnaWriteSave" parameterClass="qnaVO">
+		insert into
+		qna_t(
+		service,
+		title,
+		content,
+		writer,
+		proc_status,
+		qna_write_pw,
+		phone,
+		email,
+		open_close,
+		hit,
+		regdate,
+		u_id
+		) values(
+		#service#,
+		#title#,
+		#content#,
+		(select u_name from user_t where
+		username=#username#),
+		'검수',
+		#qna_write_pw#,
+		'010-xxxx-xxxx',
+		'email@gmail.com',
+		'공개',
+		0,
+		now(),
+		(select u_id from user_t where username=#username#)
+		)
+	</insert>
+
+	<!-- QNA 파일업로드 -->
+	<insert id="boardDAO.saveqnaFile" parameterClass="fileVO">
+		INSERT INTO
+		file
+		(b_seq,u_id, qna_seq,f_name,f_origin_name, f_path, f_size, writer,
+		regdate)
+		VALUES
+		((select max(b_seq) from playboard),
+		(select max(u_id) from user_t),
+		(select max(qna_seq)from qna_t),
+		#f_name#,
+		#f_origin_name#,
+		#f_path#,
+		#f_size#,
+		'admin',
+		now())
+	</insert>
+
+	<!-- 비밀번호 췤 -->
+	<select id="boardDAO.getPasswordByQnaSeq" resultClass="String">
+		select
+		qna_write_pw
+		from qna_t
+		where qna_seq=#qna_seq#
+	</select>
+
+	<!-- QNA 목록 페이지 비밀번호 췤 -->
+	<select id="boardDAO.checkPW" resultClass="qnaVO"
+		parameterClass="int">
+		select qna_write_pw from qna_t where qna_seq=#qna_seq#
+	</select>
+
+
+	<!-- QNA 상세 페이지 -->
+	<select id="boardDAO.qnaDetail" resultClass="qnaVO">
+		select
+		qna_seq,
+		title,
+		writer,
+		qna_write_pw,
+		to_char(regdate, 'yyyy-mm-dd') as regdate,
+		phone,
+		hit,
+		email,
+		open_close,
+		content,
+		u_id
+		from qna_t
+		where qna_seq =
+		#qna_seq#
+	</select>
+
+	<!-- QNA 상세페이지에 보여지기 위한 파일명 -->
+	<select id="boardDAO.qnafileName" resultClass="fileVO">
+		select
+		f_origin_name,
+		qna_seq from file where qna_seq=#qna_seq#
+	</select>
+
+	<!-- 글 조회수 증가 -->
+	<update id="boardDAO.qnaHit">
+		update qna_t set hit = hit + 1 where qna_seq =
+		#qna_seq#
+	</update>
+
+
+	<!-- Q&A 수정페이지 파일표시 -->
+	<select id="boardDAO.isFileqna" resultClass="fileVO">
+		select f_origin_name
+		from file
+		where qna_seq=#qna_seq#
+	</select>
+
+	<!-- Q&A 수정하기 -->
+	<update id="boardDAO.qnaModifySave" parameterClass="qnaVO">
+		update qna_t set
+		service = #service#,
+		title = #title#,
+		qna_write_pw =
+		#qna_write_pw#,
+		content = #content#
+		where qna_seq=#qna_seq# <!-- boardModify.jsp에서 
+			전달 받기 -->
+	</update>
+
+
+	<!-- Q&A 파일 수정 -->
+	<update id="boardDAO.updateFileqna">
+		update file set
+		qna_seq = #qna_seq#,
+		f_name =#f_name#,
+		f_origin_name = #f_origin_name#,
+		f_path = #f_path#,
+		f_size = #f_size#,
+		writer = 'admin',
+		regdate = now()
+		where qna_seq =#qna_seq#
+	</update>
+
+	<!-- Q&A 삭제하기 -->
+	<delete id="boardDAO.qnaDelete" parameterClass="int">
+		delete from qna_t
+		where qna_seq = #qna_seq#
+	</delete>
+
+	<!-- 상세페이지 파일 다운로드 -->
+	<select id="boardDAO.qnafileDown" parameterClass="map"
+		resultClass="FileVO">
+		SELECT * FROM file
+		WHERE qna_seq = #qna_seq# AND f_origin_name = #f_origin_name#
+		ORDER BY regdate DESC
+		LIMIT 1;
+	</select>
+
+
+	<!-- 답글 저장 -->
+	<insert id="boardDAO.commentSave">
+		insert into cm (
+		qna_seq,
+		u_id,
+		com_content,
+		regdate
+		) values(
+		#qna_seq#,
+		(select max(u_id) from user_t),
+		#com_content#,
+		now()
+		)
+	</insert>
+
+	<!-- 답변 파일업로드 -->
+	<insert id="boardDAO.savecommentFile" parameterClass="cm_fileVO">
+		INSERT INTO
+		cm_file
+		(comment_seq,f_name,f_origin_name, f_path, f_size, writer,
+		regdate)
+		VALUES
+		((select max(comment_seq) from cm),
+		#f_name#,
+		#f_origin_name#,
+		#f_path#,
+		#f_size#,
+		'쏼랴쏼랴',
+		now())
+	</insert>
+
+	<!-- 답변 파일 다운로드 -->
+	<select id="boardDAO.getcmFileDetails" parameterClass="map"
+		resultClass="cm_fileVO">
+		SELECT * FROM cm_file
+		WHERE comment_seq = #comment_seq# AND
+		f_origin_name = #f_origin_name#
+	</select>
+
+
+	<!-- 답글 가져와서 상세페이지에 보여주기 -->
+	<select id="boardDAO.cmBring" resultClass="commentVO">
+		select com_content from cm where qna_seq = #qna_seq#
+	</select>
+
+	<!-- 답글 삭제처리 -->
+	<delete id="boardDAO.answerDelete">
+		delete from cm where qna_seq = #qna_seq#
+	</delete>
+
+	<select id="boardDAO.getUid" resultClass="userVO">
+		select u_id from user_t
+		where username = #username#
+	</select>
+
+	<!-- cm의 commentseq가져오기 -->
+	<select id="boardDAO.cmSeqBring" resultClass="int">
+		select comment_seq
+		from cm where qna_seq=#qna_seq#
+	</select>
+
+	<select id="boardDAO.cmfileName" resultClass="cm_fileVO">
+		select
+		f_origin_name
+		from cm_file
+		where comment_seq=#comment_seq#
+	</select>
+
+	<!-- /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// 
+		/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// 
+		/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// 
+		/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// -->
+
+	<!-- 통계관리 -->
+	<!-- 사용자구분값 이용한 접속현황 리스트 -->
+	<select id="boardDAO.selectUser" resultClass="loginLogVO">
+		select
+			u_name,
+			username,
+			max(logdate) as logdate,
+			count(*) as login_count
+		from loginlog
+			where user_type=#UT#
+		group by
+			u_name,
+			username
+		order by
+			username desc;
+	</select>
+
+	<select id="boardDAO.selectLoginDate" resultClass="String">
+		select
+		regdate
+		from user_t
+		where username = #username#
+	</select>
+
+	<select id="common_user_type" resultClass="commonVO">
+		select code, code_name from common_code where group_code='USER_TYPE'
+	</select>
+
+
+	<!-- 페이지뷰 현황 -->
+	<!-- row_number() over (order by page_view_seq asc) as rownum -->
+
+	<select id="common_page_type" resultClass="commonVO">
+		select code, code_name from common_code where group_code='PAGE_TYPE'
+	</select>
+
+	<!-- 페이지뷰 현황 페이지 -->
+	<select id="boardDAO.getStatistics" parameterClass="map"
+		resultClass="pageVO">
+		select
+		row_number() over (order by p.p_id asc) as rownum,
+		p.p_name as pageName,
+		p.p_category as pageCategory,
+		count(*) as count
+		from page_view_log as l
+		join pages p on l.p_id = p.p_id
+
+		where 1=1
+
+		<isNotEmpty property="startDate">
+			and l.view_date &gt;= #startDate#
+		</isNotEmpty>
+
+		<isNotEmpty property="endDate">
+			and l.view_date &lt;= #endDate#
+		</isNotEmpty>
+
+		<isNotEmpty property="pageCategory">
+			and p.p_category = #pageCategory#
+		</isNotEmpty>
+		group by
+			p.p_id, p.p_name, p.p_category
+		order by
+			p.p_id
+	</select>
+	
+	
+	<insert id="insertLog_pblist">
+		insert into page_view_log (p_id, countstack,view_date) 
+		values(1,1,now())
+	</insert>
+
+
+	<insert id="insertLog_pbdetail">
+		insert into page_view_log  (p_id, countstack,view_date) 
+		values(2,1,now())
+	</insert>
+	
+	<insert id="insertLog_qnalist">
+		insert into page_view_log (p_id, countstack,view_date)
+		values(3,1,now()) 
+	</insert>
+
+	<insert id="insertLog_qnadetail">
+		insert into page_view_log (p_id, countstack,view_date) 
+		values(4,1,now())
+	</insert>
+
+<!-- 관리자 로그인 일시 -->
+	<select id="getAdminLoginStatistics" parameterClass="map" resultClass="loginLogVO">
+    select
+        to_char(date_trunc('hour', logdate), 'YYYY-MM-DD HH24:MI:SS') as loginhour,
+        count(*) as login_count
+    from loginlog
+    where
+        logdate between to_timestamp(#startDate#, 'YYYY-MM-DD HH24:MI:SS') 
+        and to_timestamp(#endDate#, 'YYYY-MM-DD HH24:MI:SS')
+        and user_type = 'admin'
+    group by
+        date_trunc('hour', logdate)
+    order by
+        loginhour asc
+</select>
+
+
+ <!-- 일반사용자 로그인 일시-->
+<select id="getRegularLoginStatistics" parameterClass="map" resultClass="loginLogVO">
+    select
+        to_char(date_trunc('hour', logdate), 'YYYY-MM-DD HH24:MI:SS') as loginhour,
+        count(*) as login_count
+    from loginlog
+    where
+        logdate between to_timestamp(#startDate#, 'YYYY-MM-DD HH24:MI:SS') 
+        and to_timestamp(#endDate#, 'YYYY-MM-DD HH24:MI:SS')
+        and user_type = 'regular'
+    group by
+        date_trunc('hour', logdate)
+    order by
+        loginhour asc
+</select>
+
+</sqlMap>

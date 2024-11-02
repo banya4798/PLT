@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-config.dtd">
+
+<configuration>
+    <typeAliases>
+		<typeAlias alias="egovMap" type="egovframework.rte.psl.dataaccess.util.EgovMap"/>
+		<typeAlias alias="userVO" type="PLT.vo.UserVO" />
+		<typeAlias alias="assignmentVO" type="PLT.vo.AssignmentVO" />
+		<typeAlias alias="courseVO" type="PLT.vo.CourseVO" />
+		<typeAlias alias="enrollmentVO" type="PLT.vo.EnrollmentVO" />
+		<typeAlias alias="lessonVO" type="PLT.vo.LessonVO" />
+		<typeAlias alias="moduleVO" type="PLT.vo.ModuleVO" />
+		<typeAlias alias="todoVO" type="PLT.vo.TodoVO" />
+    </typeAliases>
+    
+    
+</configuration>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMapConfig PUBLIC "-//iBATIS.com//DTD SQL Map Config 2.0//EN" "http://www.ibatis.com/dtd/sql-map-config-2.dtd">
+
+<sqlMapConfig>
+	<sqlMap resource="egovframework/sqlmap/example/plt_mapper/UserMapper.xml" />
+    <sqlMap resource="egovframework/sqlmap/example/plt_mapper/AssignmentMapper.xml" />
+	<sqlMap resource="egovframework/sqlmap/example/plt_mapper/CourseMapper.xml" />
+	<sqlMap resource="egovframework/sqlmap/example/plt_mapper/EnrollmentMapper.xml" />
+	<sqlMap resource="egovframework/sqlmap/example/plt_mapper/LessonMapper.xml" />
+	<sqlMap resource="egovframework/sqlmap/example/plt_mapper/ModuleMapper.xml" />
+	<sqlMap resource="egovframework/sqlmap/example/plt_mapper/TodoMapper.xml" />
+	
+</sqlMapConfig>
