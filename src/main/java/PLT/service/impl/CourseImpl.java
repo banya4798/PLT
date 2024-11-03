@@ -10,6 +10,7 @@ import PLT.dao.CourseDAO;
 import PLT.service.CourseService;
 import PLT.vo.CourseVO;
 import PLT.vo.Enrollment_registrationVO;
+import PLT.vo.UserVO;
 
 @Service("courseService")
 public class CourseImpl implements CourseService {
@@ -137,5 +138,10 @@ public class CourseImpl implements CourseService {
 	@Override
 	public int registration_id(CourseVO cvo) throws Exception {
 		return courseDAO.registration_id(cvo);
+	}
+
+	@Override
+	public List<UserVO> getEnrollment_student(int course_id) throws Exception {
+		return courseDAO.getEnrollment_student(course_id);
 	}
 }

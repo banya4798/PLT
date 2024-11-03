@@ -59,6 +59,9 @@ public class EnrollmentController {
 		log.debug("professor : " + professor);
 		log.debug("search : " + search);
 
+		HttpSession session = request.getSession();
+		String username = (String) session.getAttribute("username");
+
 		enrollVO.setSemester(semester);
 		enrollVO.setCredit(credit);
 		enrollVO.setClassification(classification);
@@ -66,6 +69,7 @@ public class EnrollmentController {
 		enrollVO.setTitle(title);
 		enrollVO.setProfessor(professor);
 		enrollVO.setSearch(search);
+		enrollVO.setUsername(username);
 
 		/* 페이징 */
 		// 페이징 처리를 위한 전체의 테이블 수
@@ -101,9 +105,6 @@ public class EnrollmentController {
 		/*학과(부)*/
 		List<CourseVO> getCourse_common_department = courseService.getCourse_common_department();
 		log.debug("학번 : " + getCourse_common_department);
-
-		HttpSession session = request.getSession();
-		String username = (String) session.getAttribute("username");
 
 		int getCredit = enrollmentService.getCredit(username);
 
@@ -245,10 +246,14 @@ public class EnrollmentController {
 	// 수강신청 목록 페이지
 	@RequestMapping(value = "/enroll_ListPage.do")
 	public String enroll_ListPage(HttpServletRequest request, EnrollmentVO evo, Model model, @RequestParam(value = "search_1", defaultValue = "") Integer semester, @RequestParam(value = "search_2", defaultValue = "") Integer credit, @RequestParam(value = "search_3", defaultValue = "") String classification, @RequestParam(value = "searchText", required = false) String searchText) throws Exception {
+		HttpSession session = request.getSession();
+		String username = (String) session.getAttribute("username");
+
 		evo.setSemester(semester);
 		evo.setCredit(credit);
 		evo.setClassification(classification);
 		evo.setSearchText(searchText);
+		evo.setUsername(username);
 
 		List<EnrollmentVO> gs1 = enrollmentService.getSearch_1();
 		List<EnrollmentVO> gs2 = enrollmentService.getSearch_2();
@@ -256,8 +261,6 @@ public class EnrollmentController {
 
 		List<EnrollmentVO> getEnrollments_List = enrollmentService.enroll_ListPage(evo);
 
-		HttpSession session = request.getSession();
-		String username = (String) session.getAttribute("username");
 		int getCredit = enrollmentService.getCredit(username);
 		log.debug("ㅇㄻㄴㅇㄻㄴㅇㄹ : " + getCredit);
 

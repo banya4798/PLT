@@ -1,6 +1,7 @@
 package PLT.controller;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
@@ -10,7 +11,9 @@ import javax.servlet.http.HttpSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -19,6 +22,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import PLT.MailSendService;
 import PLT.SHA256;
 import PLT.service.UserService;
+import PLT.vo.NotificationVO;
 import PLT.vo.UserVO;
 
 @Controller
@@ -285,6 +289,73 @@ public class UserController {
 
 		}
 
+	}
+
+	/*알람메시지 표시*/
+	@RequestMapping(value = "/getMessage.do")
+	@ResponseBody
+	public Map<String, Object> getMessage(Model model, @RequestParam(value = "username") String username) throws Exception {
+		Map<String, Object> response = new HashMap<>();
+		List<NotificationVO> getMessage = userService.getMessage(username);
+		try {
+			if (getMessage == null || getMessage.isEmpty()) {
+				response.put("status", "noM");
+				response.put("message", "NotMesseage");
+				return response;
+			} else {
+				response.put("status", "ok");
+				response.put("data", getMessage);
+			}
+		} catch (DataAccessException e) {
+			// sql 예외 처리
+			response.put("status", "sqlError");
+			response.put("message", "Database error: " + e.getMessage());
+		}
+		return response;
+	}
+
+	/*알람 메시지 읽음 표시*/
+	@RequestMapping(value = "/is_read.do")
+	@ResponseBody
+	public Map<String, Object> is_read(HttpServletRequest request, NotificationVO nvo, @RequestParam(value = "notification_id") int notification_id) throws Exception {
+
+		HttpSession session = request.getSession();
+		String username = (String) session.getAttribute("username");
+
+		Map<String, Object> response = new HashMap<>();
+
+		System.out.println(notification_id);
+		System.out.println(username);
+
+		nvo.setNotification_id(notification_id);
+		nvo.setUsername(username);
+		int update_read = userService.update_read(nvo);
+		System.out.println("콰악씨 : " + update_read);
+		if (update_read == 1) {
+			String is_read = userService.select_is_read(nvo);
+			System.out.println("귀야양 : " + is_read);
+			if ("t".equals(is_read)) {
+				response.put("status", "get_read_t");
+				response.put("TF", is_read);
+			} else if ("f".equals(is_read)) {
+				response.put("status", "get_read_f");
+				response.put("TF", is_read);
+			}
+		} else {
+			response.put("status", "update_fail");
+		}
+		return response;
+	}
+
+	@RequestMapping(value = "/deleteMessage.do")
+	@ResponseBody
+	public String deleteMessage(@RequestParam(value = "notification_id") int notification_id) throws Exception {
+		int result = userService.deleteMessage(notification_id);
+		if (result == 1) {
+			return "ok";
+		} else {
+			return "fail";
+		}
 	}
 
 }

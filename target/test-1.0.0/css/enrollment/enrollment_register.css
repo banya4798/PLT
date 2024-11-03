@@ -1,0 +1,107 @@
+    .container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 10px;
+}
+
+.title {
+    font-size: 28px;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+.part {
+    border: 1px solid #e0e0e0;
+    border-radius: 5px;
+    padding: 15px;
+    margin-bottom: 20px;
+}
+
+.part-header {
+    display: flex;
+    align-items: center;
+    font-size: 18px;
+    margin-bottom: 10px;
+}
+
+.part-header span:first-child {
+    margin-right: 10px;
+    font-weight: bold;
+}
+
+.class {
+    margin-top: 10px;
+}
+
+.empty {
+    color: #a0a0a0;
+}
+
+.add-class {
+    margin-top: 20px;
+}
+
+.add-class button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: white;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+}
+
+.dropdown:hover .dropdown-content {
+    display: block;
+}
+
+.dropdown-content a {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+}
+
+.dropdown-content a:hover {
+    background-color: #f1f1f1;
+}
+
+.bd-example {
+    border: 1px solid #ccc; /* 테두리 색상 및 두께 */
+    border-radius: 5px; /* 모서리 둥글기 */
+    padding: 5px; /* 내부 여백 */
+    margin: 15px; /* 외부 여백 */
+    max-width: 800px;
+    height:85px;
+    font-size : 0.95rem;
+}
+ .container_register {
+      background-color: rgba(175, 175, 175, 0.5); /* 흰색 배경, 50% 투명도 */
+      padding: 10px;
+      position: relative;
+	  top : 50px;
+	  width:50%;
+	  left: 380px;
+  }
+  
+  #course_delete {
+  	position: relative; /* 또는 absolute, fixed 등 사용 */
+    left: 30px;        /* 왼쪽에서 30px 오른쪽으로 이동 */
+    padding:0px 1px; /* 상하, 좌우 여백 조정 */
+}
+#course_span_1{
+	margin:0px;
+}

@@ -10,17 +10,22 @@ import javax.servlet.http.HttpSession;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import PLT.service.CourseService;
 import PLT.service.EnrollmentService;
+import PLT.service.NotificationService;
 import PLT.service.UserService;
 import PLT.vo.CourseVO;
 import PLT.vo.Enrollment_registrationVO;
+import PLT.vo.NotificationVO;
+import PLT.vo.UserVO;
 
 @Controller
 @RequestMapping(value = "/PLT")
@@ -37,6 +42,10 @@ public class CourseController {
 
 	@Resource(name = "enrollmentService")
 	private EnrollmentService enrollmentService;
+
+	// 알림기능 - firebase사용
+	@Autowired
+	private NotificationService notificationService;
 
 	/****************************************************/
 
@@ -246,6 +255,43 @@ public class CourseController {
 		} else {
 			return "fail";
 		}
+	}
+
+	@RequestMapping(value = "/getEnrollment_student.do")
+	@ResponseBody
+	public Map<String, Object> getEnrollment_student(Model model, @RequestParam(value = "course_id") int course_id) throws Exception {
+		Map<String, Object> response = new HashMap<>();
+		log.debug("가져와이 : " + course_id);
+		List<UserVO> getEnrollment_student = courseService.getEnrollment_student(course_id);
+		if (getEnrollment_student == null) {
+			response.put("status", "fail");
+		} else {
+			log.debug("ddddd : " + getEnrollment_student);
+			model.addAttribute("getEnrollment_student", getEnrollment_student);
+			response.put("status", "ok");
+			response.put("data", getEnrollment_student);
+		}
+		return response;
+	}
+
+	@RequestMapping(value = "/sendNotification.do", method = RequestMethod.POST)
+	@ResponseBody
+	public Map<String, String> sendNotification(NotificationVO nvo, @RequestParam(value = "notifcation") int student_id, @RequestParam(value = "message") String message) throws Exception {
+		Map<String, String> response = new HashMap<>();
+
+		nvo.setStudent_id(student_id);
+		nvo.setMessage(message);
+
+		System.out.println(student_id);
+		System.out.println(message);
+
+		String sendNotification = notificationService.sendNotification(nvo);
+		if (sendNotification == null) {
+			response.put("status", "ok");
+		} else {
+			response.put("status", "fail");
+		}
+		return response;
 	}
 
 }

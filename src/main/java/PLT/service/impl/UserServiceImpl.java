@@ -1,5 +1,7 @@
 package PLT.service.impl;
 
+import java.util.List;
+
 import javax.annotation.Resource;
 
 import org.springframework.dao.DataIntegrityViolationException;
@@ -8,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import PLT.dao.UserDAO;
 import PLT.service.UserService;
+import PLT.vo.NotificationVO;
 import PLT.vo.UserVO;
 
 @Service("userService")
@@ -111,6 +114,26 @@ public class UserServiceImpl implements UserService {
 		} else {
 			return i;
 		}
+	}
+
+	@Override
+	public List<NotificationVO> getMessage(String username) throws Exception {
+		return userDAO.getMessage(username);
+	}
+
+	@Override
+	public int update_read(NotificationVO nvo) throws Exception {
+		return userDAO.update_read(nvo);
+	}
+
+	@Override
+	public String select_is_read(NotificationVO nvo) throws Exception {
+		return userDAO.select_is_read(nvo);
+	}
+
+	@Override
+	public int deleteMessage(int notification_id) throws Exception {
+		return userDAO.deleteMessage(notification_id);
 	}
 
 }

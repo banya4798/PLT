@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="PLT_Space">
+
+	<typeAlias alias="userVO" type="PLT.vo.UserVO" />
+
+	<!-- 회원가입 수행 -->
+	<insert id="join">
+		insert into users(
+			username,
+			email,
+			password,
+			role_id,
+			hash_pw,
+			salt
+		)
+		values(
+		#username#,
+		#email#,
+		#password#,
+		#role_id#,
+		#hash_pw#,
+		#salt#
+		)
+	</insert>
+	
+	<insert id="insert_total_credit">
+		insert into total_credit_table (total_credit, user_id)
+		values(0, (select user_id from users where username=#username#))
+	</insert>
+	
+	<!-- 아이디 중복확인 -->
+	<select id="duplicate_id" resultClass="String">
+		select 
+			username 
+		from users 
+		where username =#username#
+	</select>
+	
+	<!-- 로그인을 위한 최초의 salt값 가져오기 -->
+	<select id="getSalt" resultClass = "String">
+	select 
+		salt 
+	from users 
+	where username=#username#
+	</select>
+	
+	<!-- 로그인 수행 -->
+	<select id="login" resultClass="userVO">
+		select 
+			username, hash_pw
+		from users 
+		where username =#username#
+	</select>
+	
+	<!-- 아이디 찾기 -->
+	<select id="find_id" resultClass="String">
+		select 
+			username 
+		from users 
+		where email= #email#
+	</select>
+	
+	<!-- 비밀번호 찾기 -->
+	<select id= "find_pw" resultClass="String">
+		select
+			password 
+		from users 
+		where username = #username# and email = #email#
+	
+	</select>
+	
+	<!-- 사용자 역할(학생 or 강사) 가져오기 -->
+	<select id="getRole_id" resultClass = "int">
+		select role_id from users where username=#username#
+	</select>
+	
+	<!-- todo 외래키 사용자 아이디 -->
+	<select id="getUser_id" resultClass="int">
+		select 
+			user_id 
+		from users 
+		where username=#username#
+	</select>
+	
+</sqlMap>

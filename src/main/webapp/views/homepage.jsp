@@ -59,11 +59,11 @@
         <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
 
             <!-- Sidebar - Brand -->
-            <a class="sidebar-brand d-flex align-items-center justify-content-center" href="index.html">
+            <a class="sidebar-brand d-flex align-items-center justify-content-center" href="/PLT/plt_homepage.do">
                 <div class="sidebar-brand-icon rotate-n-15">
                     <i class="fas fa-laugh-wink"></i>
                 </div>
-                <div class="sidebar-brand-text mx-3"><sup>*</sup>토이프로젝트 <sup>*</sup></div>
+                <div class="sidebar-brand-text mx-3">Toy Project </div>
             </a>
 
             <!-- Divider -->
@@ -71,7 +71,7 @@
 
             <!-- Nav Item - Dashboard -->
             <li class="nav-item active">
-                <a class="nav-link" href="index.html">
+                <a class="nav-link" href="/PLT/plt_homepage.do">
                     <i class="fas fa-fw fa-tachometer-alt"></i>
                     <span>Dashboard</span></a>
             </li>
@@ -208,9 +208,9 @@
                         </div>
                     </form>
 
+				
                     <!-- Topbar Navbar -->
                     <ul class="navbar-nav ml-auto">
-
                         <!-- Nav Item - Search Dropdown (Visible Only XS) -->
                         <li class="nav-item dropdown no-arrow d-sm-none">
                             <a class="nav-link dropdown-toggle" href="#" id="searchDropdown" role="button"
@@ -234,124 +234,44 @@
                                 </form>
                             </div>
                         </li>
-
-                        <!-- Nav Item - Alerts -->
-                        <li class="nav-item dropdown no-arrow mx-1">
-                            <a class="nav-link dropdown-toggle" href="#" id="alertsDropdown" role="button"
-                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <i class="fas fa-bell fa-fw"></i>
-                                <!-- Counter - Alerts -->
-                                <span class="badge badge-danger badge-counter">3+</span>
-                            </a>
-                            <!-- Dropdown - Alerts -->
-                            <div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in"
-                                aria-labelledby="alertsDropdown">
-                                <h6 class="dropdown-header">
-                                    Alerts Center
-                                </h6>
-                                <a class="dropdown-item d-flex align-items-center" href="#">
-                                    <div class="mr-3">
-                                        <div class="icon-circle bg-primary">
-                                            <i class="fas fa-file-alt text-white"></i>
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <div class="small text-gray-500">December 12, 2019</div>
-                                        <span class="font-weight-bold">A new monthly report is ready to download!</span>
-                                    </div>
-                                </a>
-                                <a class="dropdown-item d-flex align-items-center" href="#">
-                                    <div class="mr-3">
-                                        <div class="icon-circle bg-success">
-                                            <i class="fas fa-donate text-white"></i>
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <div class="small text-gray-500">December 7, 2019</div>
-                                        $290.29 has been deposited into your account!
-                                    </div>
-                                </a>
-                                <a class="dropdown-item d-flex align-items-center" href="#">
-                                    <div class="mr-3">
-                                        <div class="icon-circle bg-warning">
-                                            <i class="fas fa-exclamation-triangle text-white"></i>
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <div class="small text-gray-500">December 2, 2019</div>
-                                        Spending Alert: We've noticed unusually high spending for your account.
-                                    </div>
-                                </a>
-                                <a class="dropdown-item text-center small text-gray-500" href="#">Show All Alerts</a>
-                            </div>
-                        </li>
-
+                    
+                        
+						<%if (role_id == 1) { %>
                         <!-- Nav Item - Messages -->
                         <li class="nav-item dropdown no-arrow mx-1">
                             <a class="nav-link dropdown-toggle" href="#" id="messagesDropdown" role="button"
                                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 <i class="fas fa-envelope fa-fw"></i>
                                 <!-- Counter - Messages -->
-                                <span class="badge badge-danger badge-counter">7</span>
+                                <span class="badge badge-danger badge-counter" id="messageCount"></span>
                             </a>
                             <!-- Dropdown - Messages -->
                             <div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in"
                                 aria-labelledby="messagesDropdown">
                                 <h6 class="dropdown-header">
-                                    Message Center
+                                    알림 메시지
                                 </h6>
-                                <a class="dropdown-item d-flex align-items-center" href="#">
+                                <a class="dropdown-item d-flex align-items-center" href="#" id="showMessage">
                                     <div class="dropdown-list-image mr-3">
-                                        <img class="rounded-circle" src="img/undraw_profile_1.svg"
-                                            alt="...">
-                                        <div class="status-indicator bg-success"></div>
+                                        <span class="material-symbols-outlined">
+											wifi_notification
+										</span>
                                     </div>
+                                    
+                                    
                                     <div class="font-weight-bold">
-                                        <div class="text-truncate">Hi there! I am wondering if you can help me with a
-                                            problem I've been having.</div>
-                                        <div class="small text-gray-500">Emily Fowler · 58m</div>
+                                        <div class="text-truncate">
+                                        	
+                                        </div>
+                                        <div class="small text-gray-500">보낸 강사 이름</div>
                                     </div>
                                 </a>
-                                <a class="dropdown-item d-flex align-items-center" href="#">
-                                    <div class="dropdown-list-image mr-3">
-                                        <img class="rounded-circle" src="img/undraw_profile_2.svg"
-                                            alt="...">
-                                        <div class="status-indicator"></div>
-                                    </div>
-                                    <div>
-                                        <div class="text-truncate">I have the photos that you ordered last month, how
-                                            would you like them sent to you?</div>
-                                        <div class="small text-gray-500">Jae Chun · 1d</div>
-                                    </div>
-                                </a>
-                                <a class="dropdown-item d-flex align-items-center" href="#">
-                                    <div class="dropdown-list-image mr-3">
-                                        <img class="rounded-circle" src="img/undraw_profile_3.svg"
-                                            alt="...">
-                                        <div class="status-indicator bg-warning"></div>
-                                    </div>
-                                    <div>
-                                        <div class="text-truncate">Last month's report looks great, I am very happy with
-                                            the progress so far, keep up the good work!</div>
-                                        <div class="small text-gray-500">Morgan Alvarez · 2d</div>
-                                    </div>
-                                </a>
-                                <a class="dropdown-item d-flex align-items-center" href="#">
-                                    <div class="dropdown-list-image mr-3">
-                                        <img class="rounded-circle" src="https://source.unsplash.com/Mv9hjnEUHR4/60x60"
-                                            alt="...">
-                                        <div class="status-indicator bg-success"></div>
-                                    </div>
-                                    <div>
-                                        <div class="text-truncate">Am I a good boy? The reason I ask is because someone
-                                            told me that people say this to all dogs, even if they aren't good...</div>
-                                        <div class="small text-gray-500">Chicken the Dog · 2w</div>
-                                    </div>
-                                </a>
+                              
                                 <a class="dropdown-item text-center small text-gray-500" href="#">Read More Messages</a>
                             </div>
                         </li>
-
+   					 <%} %>
+   					 
                         <div class="topbar-divider d-none d-sm-block"></div>
                         <!-- Nav Item - User Information -->
                         <li class="nav-item dropdown no-arrow">
@@ -361,6 +281,7 @@
 								 <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
 	                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 	                                <strong><%=username%></strong>님
+	                                <input type="hidden" id="username" name="username" value="<%=username%>">
 	                                <span class="material-symbols-outlined">	logout</span>
 	                            	</a>
 								<div class="dropdown-menu dropdown-menu-right shadow animated--grow-in"
@@ -401,6 +322,10 @@
 								<a class="dropdown-item" href="/PLT/enrollment_registerPage.do"> 
 								<i class="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i> 
 								코스/강의 등록
+								</a>
+								<a class="dropdown-item" href="/PLT/assginmentPage.do"> 
+								<i class="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i> 
+								과제 등록
 								</a>
 								<%
 									}
@@ -823,6 +748,132 @@
 
 
 <script>
+window.onload = function() {
+    getMessage();
+};
+
+/* 페이지 로드 시, 알람메시지 가져오기 */
+function getMessage(){
+    var username = document.getElementById('username').value;
+    $.ajax({
+        data : {username : username},
+        dataType:"json",
+        type:"POST",
+        url:"/PLT/getMessage.do",
+        success:function(response){
+            var showMessageDiv = $(".dropdown-list"); // 드롭다운 리스트를 선택
+            showMessageDiv.empty(); // 이전 내용을 지우기
+
+            if (response.status === "ok") {
+                alert("도착한 알림 메시지가 있습니다.");
+				console.log("dd :"+JSON.stringify(response.data, null, 2))
+                // response.data를 순회하며 각 메시지를 추가
+               for (let i = 0; i < response.data.length; i++) {
+					    var successORwarning = response.data[i].read === "t" ? 'bg-success' : 'bg-warning';
+					    
+					    var showMessageView =
+					        '<a class="dropdown-item d-flex align-items-center" onclick="is_read(' + response.data[i].notification_id + ')" id="showMessage' + response.data[i].notification_id + '">' +
+					            '<div class="dropdown-list-image mr-3">' +
+					                '<span class="material-symbols-outlined">' +
+					                    'wifi_notification' +
+					                '</span>' +
+					                '<div class="status-indicator ' + successORwarning + '" id="sta'+response.data[i].notification_id+'"></div>' +
+					            '</div>' +
+					            '<div class="font-weight-bold">' +
+					                '<div class="text-truncate">' +
+					                    response.data[i].message +
+					                '</div>' +
+					                '<div class="small text-gray-500">보낸 강사 이름</div>' +
+					            '</div>' +
+					            '<button class="btn btn-danger btn-sm ml-auto" onclick="deleteMessage(' + response.data[i].notification_id + '); event.stopPropagation();">삭제</button>' +
+					        '</a>';
+					    
+					    showMessageDiv.append(showMessageView); // 각 메시지를 드롭다운 리스트에 추가
+					}
+                var messageCount = showMessageDiv.children().length;
+                var messageCountView = document.getElementById('messageCount');
+                messageCountView.textContent = messageCount;
+            }else if(response.status === "noM") {
+                return;
+            }else if(response.status === "sqlError"){
+                alert("DB에서 알람메시지를 가져오는 도중 오류 발생...");
+                return;
+            }
+        },
+        error: function(jqXHR, textStatus, errorThrown) {
+            console.error("Error details: ", textStatus, errorThrown);
+            alert("알람 메시지 수신 중 오류 발생...");
+        }
+    });
+}
+
+// 알람 메시지 읽음 표시
+// 알람 메시지 읽음 표시
+function is_read(notification_id) {
+    $.ajax({
+        url: "/PLT/is_read.do", // 실제 경로에 맞게 수정
+        data: { notification_id: notification_id },
+        dataType: "json",
+        type: "POST",
+        success: function(response) {
+            console.log("끼야아 : " + response.TF);
+            if (response.status === "get_read_t") {
+                // 클릭한 메시지의 상태를 업데이트
+                var statusIndicator = $("#sta" + notification_id); // 해당 메시지의 상태 인디케이터 선택
+                var cs = response.TF; // "t" 또는 "f"
+                
+                // 상태에 따라 클래스 변경
+                if (cs === "t") {
+                    statusIndicator.removeClass('bg-warning').addClass('bg-success');
+                } else {
+                    statusIndicator.removeClass('bg-success').addClass('bg-warning');
+                }
+            } else if (response.status === "get_read_f") {
+                // 클릭한 메시지의 상태를 업데이트
+                var statusIndicator = $("#sta" + notification_id); // 해당 메시지의 상태 인디케이터 선택
+                var cs = response.TF; // "t" 또는 "f"
+                
+                // 상태에 따라 클래스 변경
+                if (cs === "f") {
+                    statusIndicator.removeClass('bg-success').addClass('bg-warning');
+                } else {
+                    statusIndicator.removeClass('bg-warning').addClass('bg-success');
+                }
+            } else if (response.status === "update_fail") {
+                alert("읽기 표시 DB 업데이트 실패");
+                return;
+            }
+        },
+        error: function() {
+            alert("알람 표시 중 서버 오류 발생!!");
+        }
+    });
+}
+
+/* 해당 알림 메시지 삭제 */
+ function deleteMessage(notification_id){
+    $.ajax({
+        url:"/PLT/deleteMessage.do",
+        data:{notification_id:notification_id},
+        dataType:"json",
+        type:"POST",
+        success:function(response){
+            if(response === "ok"){
+                alert("해당 알림을 삭제했습니다.");
+                location.href="/PLT/plt_homepage.do";
+            }else if(response === "fail"){
+                alert("해당 알림 삭제가 처리되지 않았습니다.");
+                return;
+            }
+        },
+        error:function(){
+            alert("알람 메시지 삭제 중, 서버 오류 발생!!");
+            return;
+        }
+    })
+}
+
+
 function logout(){
     if (confirm("정말 로그아웃을 하시겠습니까??")) {
         // 확인 버튼을 눌렀을 때 실행될 코드

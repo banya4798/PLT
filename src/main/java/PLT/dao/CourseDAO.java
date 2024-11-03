@@ -6,6 +6,8 @@ import org.springframework.stereotype.Repository;
 
 import PLT.vo.CourseVO;
 import PLT.vo.Enrollment_registrationVO;
+import PLT.vo.NotificationVO;
+import PLT.vo.UserVO;
 import egovframework.rte.psl.dataaccess.EgovAbstractDAO;
 
 @Repository("courseDAO")
@@ -96,6 +98,14 @@ public class CourseDAO extends EgovAbstractDAO {
 
 	public int registration_id(CourseVO cvo) {
 		return (int) select("registration_id", cvo);
+	}
+
+	public List<UserVO> getEnrollment_student(int course_id) {
+		return (List<UserVO>) list("getEnrollment_student", course_id);
+	}
+
+	public String sendNotification(NotificationVO nvo) {
+		return (String) insert("sendNotification", nvo);
 	}
 
 }

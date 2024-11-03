@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="PLT_Space">
+
+	<typeAlias alias="egovMap" type="egovframework.rte.psl.dataaccess.util.EgovMap" />
+	<typeAlias alias="courseVO" type="PLT.vo.CourseVO" />
+	<typeAlias alias="erVO" type="PLT.vo.Enrollment_registrationVO" />
+
+
+	<!-- 코스 추가하기 -->
+	<insert id="course_add">
+		insert into courses(
+			title,
+			description,
+			instructor_id,
+			professor
+		) values(
+			#title#,
+			#description#,
+			(select 
+				user_id 
+			from users
+			where username=#username#),
+			#username#			
+		)
+	</insert>
+
+	<!-- 코스 데이터 가져오기 -->
+	<select id="getCourseList" resultClass="courseVO">
+		select
+			row_number() over (order by course_id) as course_num,
+			course_id,
+			title,
+			description
+		from courses
+		where instructor_id=#user_id#
+	</select>
+
+	<!-- 코스 삭제 -->
+	<delete id="course_delete">
+		delete from courses where course_id = #course_id#
+	</delete>	
+
+
+	<!-- 강의 추가하기 -->
+	<insert id="instruct_add">
+	 insert into enrollment_registration(
+	 	instructor_name,
+	 	instruct_title,
+	 	user_id,
+	 	course_id,
+	 	i_description,
+	 	enroll_start_time,
+	 	enroll_end_time
+	 ) values(
+	 	#instructor_name#,
+	 	#instruct_title#,
+	 	#user_id#,
+	 	#course_id#,
+	 	#i_description#,
+	 	#enroll_start_time#,
+	 	#enroll_end_time#
+	 )
+	</insert>
+
+
+	<!-- 강의 데이터 가져오기 -->
+	<select id="getErList" resultClass="erVO">
+		select 
+			registration_id,
+			instructor_name,
+			instruct_title,
+			i_description,
+			enroll_start_time,
+			enroll_end_time
+		from enrollment_registration
+		where course_id in (select course_id from courses where instructor_id = #user_id#)
+	</select>
+	
+	<!-- 강사 아이디에 해당되는 코스 아이디 가져오기 -->
+	<select id="getCourse_id" resultClass="int">
+		select 
+			course_id
+		from enrollment_registration
+		where user_id = #user_id#
+	</select>
+	
+	<!-- 강의 삭제 -->
+	<delete id="instruct_delete">
+		delete from enrollment_registration 
+		where course_id = #course_id#
+	</delete>
+	
+	
+		<!-- 코스의 학사정보 가져오기 -->
+		<!--  학기 -->
+		<select id="getCourse_common_semester" resultClass="int">
+			select semester from course_common group by semester;
+		</select>
+	
+		<!-- 학점 -->
+		<select id="getCourse_common_credit" resultClass="int">
+			select credit from course_common group by credit order by credit;
+		</select>
+		
+		<!-- 전공 -->
+		<!-- <select id="getCourse_common_classification" resultClass="String">
+			select 
+				classification 
+			from course_common 
+			where department=#department# 
+			group by classification;
+		</select> -->
+		
+		<!-- 학부 -->
+		<select id="getCourse_common_department" resultClass="String">
+			select 
+				department 
+			from course_common 
+			group by department;
+		</select>
+		
+		<!-- 해당 코스에 대한 학사정보 업데이트 -->
+		<update id="update_courseInfo">
+		 update courses set 
+		 	semester = #semester#,
+			credit = #credit#,
+			department = #department#,
+			classification = #classification#
+		where course_id = #course_id#
+		</update>
+		
+		<!-- 해당 코스에 대한 학사정보 가져오기 -->
+		<select id="getCourse_Info" resultClass="courseVO">
+			select
+				description,
+				semester,
+				credit,
+				classification,
+				department
+			from courses
+			where course_id= #course_id#
+		</select>
+		
+		
+		<!-- 코스에 해당하는 강의자료 보여주기 -->
+	<select id="enroll_show" resultClass="erVO">
+		select 
+			registration_id,
+			row_number() over(order by registration_id) as registration_num,
+			instructor_name,
+			instruct_title,
+			i_description,
+			enroll_start_time,
+			enroll_end_time
+		from enrollment_registration
+		where course_id = #course_id#
+	</select>
+	
+	<!-- 코스에 해당하는 각각의 강의 삭제 -->
+	<delete id="element_enroll_delete">
+		delete from enrollment_registration where registration_id=#registration_id#
+	</delete>
+	
+	
+		<select id="registration_id" resultClass="int">
+			select
+				registration_id
+			from enrollment_registration
+			where user_id=(select user_id from users where username=#username#) 
+					and course_id = #course_id#
+					and 
+		</select>
+		
+		
+</sqlMap>

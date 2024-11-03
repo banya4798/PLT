@@ -1,5 +1,8 @@
 package PLT.service;
 
+import java.util.List;
+
+import PLT.vo.NotificationVO;
 import PLT.vo.UserVO;
 
 public interface UserService {
@@ -31,5 +34,13 @@ public interface UserService {
 
 	/*todo 외래키 사용자 아이디*/
 	public int getUser_id(String username_for_user_id) throws Exception;
+
+	public List<NotificationVO> getMessage(String username) throws Exception;
+
+	public int update_read(NotificationVO nvo) throws Exception;
+
+	public String select_is_read(NotificationVO nvo) throws Exception;
+
+	public int deleteMessage(int notification_id) throws Exception;
 
 }

@@ -4,6 +4,7 @@ import java.util.List;
 
 import PLT.vo.CourseVO;
 import PLT.vo.Enrollment_registrationVO;
+import PLT.vo.UserVO;
 
 public interface CourseService {
 
@@ -58,5 +59,7 @@ public interface CourseService {
 	int getC_id(String username) throws Exception;
 
 	int registration_id(CourseVO cvo) throws Exception;
+
+	List<UserVO> getEnrollment_student(int course_id) throws Exception;
 
 }

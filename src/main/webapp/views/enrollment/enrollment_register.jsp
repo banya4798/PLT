@@ -342,6 +342,15 @@ if (session.getAttribute("role_id") != null) {
 					</button>
 					<!-- 삭제하기 -->
 					
+					<!-- 해당 코스를 신청한 학생에게 알림보내기 위한 모달창을 여는 버튼 -->
+					<button type="button" class="btn btn-success" data-bs-toggle="modal"
+						data-bs-target="#exampleModal4" onclick="course_info2(${course_list.course_id })">
+						<span class="material-symbols-outlined" id="course_span_1">
+						menu_open
+						</span>
+					</button>
+					<!-- !해당 코스를 신청한 학생에게 알림보내기 위한 모달창을 여는 버튼 -->
+					
 					<div class="accordion" id="accordionExample${course_list.course_id}">
 					    <div class="accordion-item">
 					        <h2 class="accordion-header">
@@ -537,7 +546,6 @@ if (session.getAttribute("role_id") != null) {
 						</div>
 				<!-- /Body -->
 
-
 				<!--  Footer -->
 				<div class="modal-footer">
 					<button type="button" class="btn btn-primary" id="course_com_add">Set</button>
@@ -552,6 +560,8 @@ if (session.getAttribute("role_id") != null) {
 	</div>
 	</div></div>
 	<!-- /코스에 대한 학사정보 추가 모달창 -->
+
+
 
 
 
@@ -619,6 +629,8 @@ if (session.getAttribute("role_id") != null) {
 	</div>
 </div>
 
+
+
 <!-- 해당 강의에 업로드한 파일 목록 보여주기 모달창 -->
 	<div class="modal fade" id="file_Modal" tabindex="-1"
 		aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -655,6 +667,69 @@ if (session.getAttribute("role_id") != null) {
 
 		</div>
 	</div>
+
+
+<!-- 해당 코스를 신청한 학생에 대하여 알림을 보내기 위한 모달창 -->
+<div class="modal fade" id="exampleModal4" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+
+				<!-- Header -->
+				<div class="modal-header">
+					<h1 class="modal-title fs-5" id="exampleModalLabel" >학사정보 세팅</h1>
+					<button type="button" class="btn-close" data-bs-dismiss="modal"
+						aria-label="Close"></button>
+				</div>
+				<!-- /Header -->
+
+				<!-- Body -->
+				<div class="modal-body">
+					<div class="bd-example">
+						<ul>
+							<li>코스에 해당하는 아래의 정보를 입력해주세요.</li>
+							<li>모든 입력 값은 필수로 입력해야합니다.</li>
+							<li>1) 학기, 2) 학점, 3) 이수구분(전공/기타), 4) 학부(과)</li>
+						</ul>
+					</div>
+					<hr>
+					<div class="row align-items-center mb-3">
+						<div class="col-auto d-flex align-items-center">
+						
+							<input type="hidden" id="com_course_id_2">
+							
+							<span class="material-symbols-outlined me-2">list_alt</span>수강신청 학생목록
+								<select name="notifcation" id="notifcation">
+								    <option value="">학생 목록을 불러오는 중...</option>
+								</select>
+							 </div>
+							 <hr />
+							 <!-- 보낼 메시지 -->
+							 <div class="mb-3 d-flex">
+								<label for="message-text" class="col-form-label">
+									<span class="material-symbols-outlined">
+											notifications_active
+									</span>
+								</label>
+								<textarea class="form-control" id="notification_message" placeholder="알람 메시지"></textarea>
+							</div>
+						</div>
+				<!-- /Body -->
+
+				<!--  Footer -->
+				<div class="modal-footer">
+					<button type="button" class="btn btn-primary" id="nofication_send">알림보내기</button>
+					<button type="button" class="btn btn-secondary"
+						data-bs-dismiss="modal">Close</button>
+				</div>
+				<!--  /Footer -->
+
+			</div>
+
+	</div>
+	</div>
+	</div>
+<!-- !해당 코스를 신청한 학생에 대하여 알림을 보내기 위한 모달창 -->
+
 
 <!-- enrollment_register.js -->
 <script src="../js/enrollment_register/enrollment_register.js"></script>

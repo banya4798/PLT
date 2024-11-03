@@ -6,4 +6,21 @@
 	<typeAlias alias="egovMap" type="egovframework.rte.psl.dataaccess.util.EgovMap" />
 	<typeAlias alias="assignmentVO" type="PLT.vo.AssignmentVO" />
 
+	<!-- 과제 등록 -->
+	<insert id="assignmentRegistration">
+		insert into assignments(
+			title,
+			description,
+			instructor_id,
+			max_grade,
+			due_date
+		) values(
+			#title#,
+			#description#,
+			(select user_id from users where username=#username#),
+			#max_grade#,
+			to_timestamp(#due_date#, 'YYYY-MM-DD"T"HH24:MI')
+		)
+	</insert>
+
 </sqlMap>

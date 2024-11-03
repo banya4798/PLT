@@ -20,7 +20,6 @@ $(function() {
 	// Datepicker
 	$(".datepicker").datepicker({
         showOn: 'button',
-        buttonText: "",
         dateFormat: 'yy-mm-dd'
     }).next(".ui-datepicker-trigger").addClass("fa fa-calendar");
 	
@@ -75,6 +74,8 @@ $(function() {
 	});
 	
 });
+
+
 // Datepicker
 $.datepicker.setDefaults({
 	dateFormat: 'yy-mm-dd',
@@ -86,7 +87,9 @@ $.datepicker.setDefaults({
 	dayNamesShort: ['일', '월', '화', '수', '목', '금', '토'],
 	dayNamesMin: ['일', '월', '화', '수', '목', '금', '토'],
 	showMonthAfterYear: true,
-	yearSuffix: '년'
+	yearSuffix: '년',
+	changeMonth:true,
+	changeYear:true 
 });
 
 // Back To Top

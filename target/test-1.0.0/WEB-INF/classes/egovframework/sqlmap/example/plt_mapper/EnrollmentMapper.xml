@@ -1,0 +1,336 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="PLT_Space">
+
+	<typeAlias alias="egovMap" type="egovframework.rte.psl.dataaccess.util.EgovMap" />
+	<typeAlias alias="enrollmentVO" type="PLT.vo.EnrollmentVO" />
+	<typeAlias alias="courseVO" type="PLT.vo.CourseVO" />
+	<typeAlias alias="fileVO" type="PLT.vo.FileVO" />
+	<typeAlias alias="enrollment_registrationVO" type="PLT.vo.Enrollment_registrationVO" />
+	
+	<!-- 학생 수강신청용 -->
+	<select id="getCrsList" resultClass="courseVO">
+		select
+			c.course_id,
+			row_number() over(order by c.course_id) as course_num,
+			c.title,
+			c.description,
+			c.professor,
+			c.credit,
+			c.semester,
+			c.classification,
+			c.department,
+			c.registration_id,
+			c.instructor_id,
+			e.status
+			
+		from courses c
+		left join
+			enrollments e on c.course_id = e.course_id
+		
+		where 1=1
+		
+		<isNotNull property="semester">
+			and c.semester = #semester#
+		</isNotNull>
+		
+		<isNotNull property="credit">
+			and c.credit = #credit#
+		</isNotNull>
+		
+		<isNotEmpty property="classification">
+			and c.classification = #classification#
+		</isNotEmpty>
+		
+		<isNotEmpty property="department">
+			and c.department = #department#
+		</isNotEmpty>
+		
+		<isNotEmpty property="title">
+			and c.title = #title#
+		</isNotEmpty>
+		
+		<isNotEmpty property="professor">
+			and c.professor = #professor#
+		</isNotEmpty>
+		
+		<isNotEmpty property="search">
+			and c.title like '%' || #search# || '%' or c.professor like '%' || #search# || '%'
+		</isNotEmpty>
+		
+		order by c.course_id, c.created_at desc
+		limit 3 offset #startIndex#
+	</select> 
+	
+	
+	<!-- 페이징 처리를 위한 전체의 테이블 수 -->
+	<select id="total" resultClass="int">
+		select count(*) 
+			from courses 
+			where 1=1
+			
+			<isNotNull property="semester">
+			    and semester = #semester#
+			</isNotNull>
+			
+			<isNotNull property="credit">
+			    and credit = #credit#
+			</isNotNull>
+			
+			<isNotEmpty property="classification">
+			    and classification = #classification#
+			</isNotEmpty>
+			
+			<isNotEmpty property="department">
+			    and department = #department#
+			</isNotEmpty>
+			
+			<isNotEmpty property="title">
+			    and title = #title#
+			</isNotEmpty>
+			
+			<isNotEmpty property="professor">
+			    and professor = #professor#
+			</isNotEmpty>
+			
+			<isNotEmpty property="search">
+			    and (title like '%' || #search# || '%' or professor like '%' || #search# || '%')
+			</isNotEmpty>
+	</select>
+	
+	<!-- 수강신청 시, 해당 코스의 시간표 -->
+	<select id="enroll_time" resultClass="enrollmentVO">
+		select 
+				enroll_start_time,
+				enroll_end_time
+			 from enrollment_registration
+		where course_id = #course_id#
+	</select>
+	
+	<!-- 시간 검색 모달창 -->
+	<select id="get_Time_Ttile_Professor_List" resultClass="courseVO">
+		select 
+			title,professor
+		from courses c
+		join enrollment_registration e on c.course_id = e.course_id 
+		where e.enroll_start_time &gt;= #enroll_start_time# and e.enroll_end_time &lt;= #enroll_end_time#
+	</select>
+
+	<!-- 수강신청 시, 수강신청 테이블에 저장 -->
+	<insert id="insert_register">
+		insert into enrollments (
+			user_id,
+			course_id,
+			title,
+			professor,
+			semester,
+			credit,
+			classification,
+			department,
+			enroll_start_time,
+			enroll_end_time,
+			instructor_id
+		) values(
+            (select user_id from users where username=#username#),
+			#course_id#,
+			#title#,
+			#professor#,
+			#semester#,
+			#credit#,
+			#classification#,
+			#department#,
+			#enroll_start_time#,
+			#enroll_end_time#,
+			#instructor_id#
+			)
+			on conflict (user_id, course_id)
+			do update set status = case
+				when enrollments.status = '수강' then '미수강'
+				else '수강'
+			end
+			<!-- postgreSQL의 insert...on conflict..do update구문 사용 -->
+	</insert>
+	
+	<!-- 신청학점 업데이트 -->
+		<update id="total_credit">
+			update total_credit_table set total_credit = total_credit + #credit# where user_id =(select user_id from users where username=#username#)
+		</update>
+ 
+ 		<update id="minus_credit">
+ 			update total_credit_table set total_credit = total_credit - #credit# where user_id =(select user_id from users where username=#username#)
+ 		</update>
+ 		
+		<!-- 수강신청 취소 -->
+		<delete id="cancle_enrollStatus">
+			delete from enrollments
+			where course_id =#course_id# and user_id = (select user_id from users where username=#username#)
+		</delete>
+		
+		<select id="getCredit" resultClass="int">
+			select 
+				total_credit
+			from total_credit_table
+			where user_id=(select user_id from users where username=#username#)
+		</select>
+ 
+
+		<!--  수강신청 현황 리스트 -->
+		<select id="enroll_ListPage" resultClass="enrollmentVO">
+			select 
+				enrollment_id,
+				row_number() over(order by enrollment_id) as enrollment_num,
+				instructor_id,
+				user_id,
+				course_id,
+				status,
+				title,
+				professor,
+				semester,
+				credit,
+				classification,
+				department,
+				registration_id,
+				enroll_start_time,
+				enroll_end_time
+			from enrollments
+			
+			where 1=1
+		
+			<isNotNull property="semester">
+				and semester = #semester#
+			</isNotNull>
+			
+			
+			<isNotNull property="credit">
+				and credit = #credit#
+			</isNotNull>
+			
+			
+			<isNotEmpty property="classification">
+				and classification = #classification#
+			</isNotEmpty>
+			
+				<isNotEmpty property = "searchText">
+				and (title like '%' || #searchText# || '%' or department like '%'|| #searchText#  || '%')
+			</isNotEmpty>
+			
+				order by enrollment_num
+		</select>
+
+
+		<select id="total_course_com" resultClass="int">
+			select count(*)
+			from enrollments
+		
+			where 1=1
+		
+			<isNotNull property="semester">
+				and semester = #semester#
+			</isNotNull>
+		
+		
+			<isNotNull property="credit">
+				and credit = #credit#
+			</isNotNull>
+		
+		
+			<isNotEmpty property="classification">
+				and classification = #classification#
+			</isNotEmpty>
+			
+			<isNotEmpty property = "searchText">
+				and (title like '%' || #searchText# || '%' or department like '%'|| #searchText#  || '%')
+			</isNotEmpty>
+		</select>
+		
+		
+		
+		<!-- 학기 -->
+		<select id="getSearch_1" resultClass="enrollmentVO">
+			select semester from course_common group by semester
+		</select>
+		
+		<!-- 학점 -->
+		<select id="getSearch_2" resultClass="enrollmentVO">
+			select credit from course_common group by credit order by credit
+		</select>
+		
+		<!-- 	학부 -->
+		<select id="getSearch_3" resultClass="enrollmentVO">
+			select classification from course_common group by classification
+		</select>
+
+
+<insert id="file">
+	insert into file(
+		registration_id,
+		course_id,
+		user_id,
+		f_name,
+		f_origin_name,
+		f_path,
+		f_size
+	) values(
+			(select 
+				registration_id 
+			from enrollment_registration 
+			where user_id=(select user_id from users where username=#username#) 
+					and course_id = #course_id# 
+					and instruct_title=#instruct_title#),
+		#course_id#,
+		(select user_id from users where username=#username#),
+		#f_name#,
+		#f_origin_name#,
+		#f_path#,
+		#f_size#
+	)
+</insert>
+
+<!-- 강사본인이 업로드한 파일목록 보여주기 -->
+<select id="show_files" resultClass="fileVO">
+	select 
+		f_origin_name,
+		(select instruct_title from enrollment_registration where registration_id = #registration_id#) as instruct_title
+	from file
+	where registration_id = #registration_id# and course_id = #course_id# and user_id=(select user_id from users where username=#username#)
+</select>
+
+<!-- 수강신청한 강의에 해당하는 정보 가져오기 -->
+<select id="getEnrollMentList" resultClass="enrollment_registrationVO">
+	select 
+	    registration_id,
+	    row_number() over (order by registration_id) as registration_num,
+	    instruct_title,
+	    instructor_name,
+	    i_description
+	from 
+	    enrollment_registration
+	where 
+	   course_id = #course_id# and user_id = #instructor_id#
+</select>
+
+ <!-- 강의에 해당하는 파일 가져오기 -->
+	<select id="getEnrollMentFileList" resultClass="fileVO">
+		select 
+			f_id,
+			f_origin_name,
+			registration_id
+		from file
+		where course_id = #course_id# and user_id = #instructor_id# and registration_id = #registration_id#;
+	</select>
+
+<!-- 강의자료 다운로드 -->
+	<select id="getFileById" resultClass="fileVO">
+		select
+			f_id,
+			f_name,
+			f_origin_name,
+			f_path,
+			f_size,
+			f_regdate
+		from file
+		where registration_id =#registration_id# and f_id =#f_id#
+	</select>
+
+</sqlMap>

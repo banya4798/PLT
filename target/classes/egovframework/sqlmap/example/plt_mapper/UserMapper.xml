@@ -4,6 +4,7 @@
 <sqlMap namespace="PLT_Space">
 
 	<typeAlias alias="userVO" type="PLT.vo.UserVO" />
+	<typeAlias alias="notificationVO" type="PLT.vo.NotificationVO" />
 
 	<!-- 회원가입 수행 -->
 	<insert id="join">
@@ -83,5 +84,37 @@
 		from users 
 		where username=#username#
 	</select>
+	
+	<!-- 해당 학생에게 도착한 알람메시지  -->
+	<select id="getMessage" resultClass="notificationVO">
+		select
+			notification_id,
+			message,
+			read
+		from notification
+		where student_id = (select user_id from users where username=#username#)
+	</select>
+	
+	<!-- 알림 읽음 표시 -->
+	<update id="update_read">
+		update notification 
+		set read  = case
+              when read = true then false
+              when read = false then true
+           end
+        where notification_id=#notification_id#
+        	and student_id = (select user_id from users where username=#username#);
+	</update>
+	
+	<select id="select_is_read" resultClass="String">
+		select read
+		from notification
+		where notification_id=#notification_id#
+        	and student_id = (select user_id from users where username=#username#)
+	</select>
+	
+	<delete id="deleteMessage">
+		delete from notification where notification_id=#notification_id#
+	</delete>
 	
 </sqlMap>

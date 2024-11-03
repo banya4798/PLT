@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Repository;
 
+import PLT.vo.NotificationVO;
 import PLT.vo.UserVO;
 import egovframework.rte.psl.dataaccess.EgovAbstractDAO;
 
@@ -59,6 +60,26 @@ public class UserDAO extends EgovAbstractDAO {
 
 	public void insert_total_credit(UserVO uservo) {
 		insert("insert_total_credit", uservo);
+	}
+
+	public List<NotificationVO> getMessage(String username) {
+		return (List<NotificationVO>) list("getMessage", username);
+	}
+
+	public int update_read(NotificationVO nvo) {
+		return update("update_read", nvo);
+	}
+
+	public String select_is_read(NotificationVO nvo) {
+		String bl = (String) select("select_is_read", nvo);
+		if (bl == null) {
+			System.out.println(bl);
+		}
+		return bl;
+	}
+
+	public int deleteMessage(int notification_id) {
+		return delete("deleteMessage", notification_id);
 	}
 
 }

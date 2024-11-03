@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="PLT_Space">
+
+	<typeAlias alias="egovMap" type="egovframework.rte.psl.dataaccess.util.EgovMap" />
+	<typeAlias alias="todoVO" type="PLT.vo.TodoVO" />
+
+
+
+	<!--  todo리스트 표출 -->
+	<select id="todo_list" resultClass="todoVO">
+		select 
+			todo_id,
+			title,
+			description,
+			to_char(due_date, 'yyyy-MM-dd') as due_date,
+			priority,
+			completed,
+			user_id,
+			todo_categories_id,
+			to_char(created_at, 'yyyy-mm-dd') as created_at,
+			to_char(updated_at, 'yyyy-mm-dd') as updated_at
+		from todo
+		order by todo_id;
+	</select>
+
+
+	<!-- todo 데이터 저장 -->
+	<insert id="insert_todo_data">
+		insert into todo (
+			title,
+			description,
+			due_date,
+			priority,
+			user_id,
+			todo_categories_id
+		)
+		values(
+			#title#,
+			#description#,
+			to_timestamp(#due_date#, 'yyyy-mm-dd hh24:mi:ss'),
+			#priority#,
+			#user_id#,
+			#todo_categories_id#
+		)
+		
+	
+	</insert>
+	
+	<!-- todo 카테고리 이름 가져오기(개인,학습,과제) -->
+	<select id="todo_categories" resultClass="String">
+		select 
+			todo_categories_name 
+		from todo_categories
+		where todo_categories_id = #todo_categories_id#
+	</select>
+
+
+<!-- (최근 데이터 입력의 최신순 기준으로) todo data가져오기 -->
+	<select id="select_todo_data" resultClass="todoVO">
+		select 
+			todo_id,
+			title,
+			description,
+			to_char(due_date, 'yyyy-mm-dd') as due_date,
+			priority,
+			completed,
+			user_id,
+			todo_categories_id,
+			to_char(created_at, 'yyyy-mm-dd') as created_at,
+			to_char(updated_at, 'yyyy-mm-dd') as updated_at
+		from todo
+		order by created_at desc limit 1;
+	
+	</select>
+	
+	<!-- 할일 수정 -->
+	<update id="todo_update">
+		update todo set 
+			due_date = to_timestamp(#due_date#, 'yyyy-mm-dd hh24:mi:ss'), <!-- timestamp형식으로 변환 후 db저장 -->
+			todo_categories_id = #todo_categories_id#,
+			description=#description#,
+			priority=#priority#,
+			title=#title#
+			where todo_id = #todo_id#
+	</update>
+	
+	<!-- 할일 삭제 -->
+	<delete id = "todo_delete">
+		delete from todo where todo_id = #todo_id#
+	</delete>
+
+</sqlMap>
