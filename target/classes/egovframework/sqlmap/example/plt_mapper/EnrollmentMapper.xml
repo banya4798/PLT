@@ -21,7 +21,6 @@
 			c.semester,
 			c.classification,
 			c.department,
-			c.registration_id,
 			c.instructor_id,
 			e.status
 			
@@ -190,7 +189,6 @@
 				credit,
 				classification,
 				department,
-				registration_id,
 				enroll_start_time,
 				enroll_end_time
 			from enrollments

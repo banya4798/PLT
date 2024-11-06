@@ -6,6 +6,7 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.slf4j.Logger;
@@ -41,23 +42,11 @@ public class UserController {
 	private SHA256 sha256;
 
 	/****************************************************/
-
-	/****************************************************/
-	/*홈페이지 화면*/
-	@RequestMapping(value = "/plt_homepage.do")
-	public String plt_homepage() throws Exception {
-		int i = 5;
-		log.debug("로그기능 쳌" + i);
-		return "views/homepage";
-	}
-
-	/****************************************************/
-
 	/****************************************************/
 	/*로그인 실행*/
 	@RequestMapping(value = "/login.do")
 	@ResponseBody
-	public String Login(UserVO uservo, HttpServletRequest request, @RequestParam(value = "username", required = false) String username, @RequestParam(value = "password", required = false) String password) throws Exception {
+	public String Login(UserVO uservo, HttpServletRequest request, HttpServletResponse response, @RequestParam(value = "username", required = false) String username, @RequestParam(value = "password", required = false) String password) throws Exception {
 		log.debug("입력한 아이디 : " + username);
 		log.debug("입력한 비밀번호 : " + password);
 
@@ -93,6 +82,8 @@ public class UserController {
 				} else {
 				    session.setMaxInactiveInterval(30 * 60); // 일반 사용자 세션 타임아웃: 30분
 				}*/
+
+				// 학생인 경우, 과제 상태 테이블에 대한 로그 남기기
 
 				return "ok"; //아이디와 비밀번호 일치.
 			} else if ("valied_pw".equals(result)) {
@@ -173,6 +164,9 @@ public class UserController {
 		log.debug(result);
 
 		if (result.equals("ok")) {
+			if (uservo.getRole_id() == 1) { // 학생이면 해당 학생의 과제 제출 로그테이블 insert
+				userService.insert_sub_status_student(username);
+			}
 			return "ok";
 		} else if (result.equals("duplicate_email")) {
 			return "duplicate_email";

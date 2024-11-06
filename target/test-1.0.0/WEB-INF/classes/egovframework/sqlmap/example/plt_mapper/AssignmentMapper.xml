@@ -5,5 +5,89 @@
 
 	<typeAlias alias="egovMap" type="egovframework.rte.psl.dataaccess.util.EgovMap" />
 	<typeAlias alias="assignmentVO" type="PLT.vo.AssignmentVO" />
+	<typeAlias alias="subVO" type="PLT.vo.SubmissionsVO" />
+
+	<!-- 과제 등록 -->
+	<insert id="assignmentRegistration">
+		insert into assignments(
+			title,
+			description,
+			instructor_id,
+			max_grade,
+			due_date
+		) values(
+			#title#,
+			#description#,
+			(select user_id from users where username=#username#),
+			#max_grade#,
+			to_timestamp(#due_date#, 'YYYY-MM-DD"T"HH24:MI')
+		)
+	</insert>
+	
+	<select id="getInstructor_id" resultClass="int">
+		select instructor_id
+		from enrollments where user_id=(select user_id from users where username =#username#) group by instructor_id;
+	</select>
+
+	<select id="getAssignMentList" resultClass="assignmentVO">
+		select 
+			a.assignment_id, a.title, a.description, a.instructor_id, a.max_grade, to_char(a.due_date, 'YYYY-MM-DD HH24:MI:SS') as due_date
+		from assignments a
+		join users u on a.instructor_id = u.user_id
+		join enrollments e on a.instructor_id = e.instructor_id
+		where a.instructor_id in (
+		    select instructor_id 
+		    from enrollments 
+		    where user_id = (select user_id from users where username = #username#)
+		)
+		group by a.assignment_id, a.title, a.description;
+	</select>
+	
+
+	<!-- 학생의 과제 제출 -->
+	<insert id="insert_sub">
+		insert into submissions(
+			title,
+			content,
+			assignment_id,
+			student_id,
+			f_origin_name
+		) values(
+			#title#,
+			#content#,
+			#assignment_id#,
+			(select user_id from users where username=#username#),
+			#f_origin_name#
+		)
+	</insert>
+
+	<select id="getSubmissions" resultClass="subVO">
+		select 
+			submissions_id,
+			status
+		from submissions
+		where title=#title# and content=#content# and assignment_id=#assignment_id#
+			and student_id=(select user_id from users where username=#username#)
+			and f_origin_name=#f_origin_name#
+	</select>
+
+	<!-- 과제 제출 테이블 -->
+	<insert id="sub_file">
+		insert into submission_file(
+			student_id,
+			submissions_id,
+			f_name,
+			f_origin_name,
+			f_path,
+			f_size
+		) values(
+			(select user_id from users where username=#username#),
+			#submissions_id#,
+			#f_name#,
+			#f_origin_name#,
+			#f_path#,
+			#f_size#
+		)
+	</insert>
 
 </sqlMap>

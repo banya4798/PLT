@@ -27,7 +27,7 @@
 			
 		from courses c
 		left join
-			enrollments e on c.course_id = e.course_id
+			enrollments e on c.course_id = e.course_id and e.user_id = (select user_id from users where username=#username#)
 		
 		where 1=1
 		
@@ -196,6 +196,10 @@
 			from enrollments
 			
 			where 1=1
+			
+			  <isNotNull property="username">
+			        and user_id = (select user_id from users where username=#username#)
+			    </isNotNull>
 		
 			<isNotNull property="semester">
 				and semester = #semester#

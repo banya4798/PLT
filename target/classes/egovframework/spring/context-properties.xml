@@ -10,6 +10,5 @@
 	        </map>
 		</property>
 	</bean>
-	
-	<!-- <bean id="firebaseInit" class="PLT.FirebaseInit"/> -->
+
 </beans>	

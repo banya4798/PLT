@@ -136,4 +136,9 @@ public class UserServiceImpl implements UserService {
 		return userDAO.deleteMessage(notification_id);
 	}
 
+	@Override
+	public void insert_sub_status_student(String username) throws Exception {
+		userDAO.insert_sub_status_student(username);
+	}
+
 }

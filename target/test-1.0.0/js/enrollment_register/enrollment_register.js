@@ -10,6 +10,7 @@ $(document).ready(function() {
         $('#instruct_add').click(instruct_add);
         $('#instruct_delete').click(instruct_delete);
         $('#course_com_add').click(course_com_add);
+        $('#nofication_send').click(nofication_send);
 });
 
         
@@ -203,6 +204,44 @@ $(document).ready(function() {
         function course_info(course_id){
             document.getElementById('com_course_id').value = course_id;
             return;
+        }
+        
+        //해당 코스를 신청한 학생에 대하여 알림을 보내기 위한 모달창
+        function course_info2(course_id){
+            $.ajax({
+                url:"/PLT/getEnrollment_student.do",
+                data : {course_id :course_id },
+                dataType:"json",
+                type:"POST",
+                success:function(response){
+                    if(response.status === "ok"){
+                        alert("학생에게 알림을 보낼 모달창을 엽니다.");
+                        document.getElementById('com_course_id_2').value = course_id;
+                     // 학생 목록을 가져와서 select 요소에 추가
+                        var select = document.getElementById('notifcation');
+                        select.innerHTML = ''; // 기존 옵션 제거
+
+                        if (response.data.length > 0) {
+                            response.data.forEach(function(student) {
+                                var option = document.createElement('option');
+                                option.value = student.user_id; // 학생 ID를 value로 설정
+                                option.textContent = student.username; // 학생 이름을 표시
+                                select.appendChild(option);
+                            });
+                        } else {
+                            var option = document.createElement('option');
+                            option.value = '';
+                            option.textContent = '해당 코스를 신청한 학생이 없습니다.';
+                            select.appendChild(option);
+                        }
+                    } else if (response.status === "fail") {
+                        alert("해당 코스를 신청한 학생목록을 가져올 수 없습니다.");
+                    }
+                },
+                error: function() {
+                    alert("서버 오류 발생!! 서버를 확인하세요.");
+                }
+            });
         }
         
         /*코스 삭제*/
@@ -566,6 +605,47 @@ $(document).ready(function() {
         }
 
         
+        /*해당 코스를 수강한 학생에게 알림보내기*/
+        function nofication_send(){
+            var course_id = document.getElementById('com_course_id_2').value;
+            var notifcation = document.getElementById('notifcation').value;
+            var message = document.getElementById('notification_message').value; 
+            console.log(course_id);
+            console.log(notifcation);
+            console.log(message);
+            var formData = {course_id:course_id, notifcation:notifcation,message:message }
+            
+            if(notifcation === ""){
+                alert("학생정보가 없습니다.");
+                return;
+            }else if(message === ""){
+                alert("해당 학생에게 보낼 알람메시지를 입력해주세요.");
+                return;
+            }
+            
+            $.ajax({
+               type:"POST",
+               url:"/PLT/sendNotification.do",
+               data:formData,
+               dataType:"json",
+               success:function(response){
+                   console.log(response);
+                   if(response.status === "ok"){
+                       alert("학생에게 알림을 전송했습니다.");
+                       location.href="/PLT/enrollment_registerPage.do";
+                   }else if(response.status === "fail"){
+                       alert("알림 전송이 실패했습니다.");
+                       return;
+                   }
+               }, error:function(response){
+                   console.log(response);
+                   alert("서버 오류 발생!! 서버를 확인하세요...");
+                   return;
+               }
+                
+            });
+            
+        }
         
         
         

@@ -6,7 +6,7 @@
 	<typeAlias alias="egovMap" type="egovframework.rte.psl.dataaccess.util.EgovMap" />
 	<typeAlias alias="courseVO" type="PLT.vo.CourseVO" />
 	<typeAlias alias="erVO" type="PLT.vo.Enrollment_registrationVO" />
-
+	<typeAlias alias="userVO" type="PLT.vo.UserVO" />
 
 	<!-- 코스 추가하기 -->
 	<insert id="course_add">
@@ -162,16 +162,26 @@
 	<delete id="element_enroll_delete">
 		delete from enrollment_registration where registration_id=#registration_id#
 	</delete>
-	
-	
-		<select id="registration_id" resultClass="int">
+		
+		<!-- 해당 코스를 신청한 학생 목록 -->
+		<select id= "getEnrollment_student" resultClass="userVO">
 			select
-				registration_id
-			from enrollment_registration
-			where user_id=(select user_id from users where username=#username#) 
-					and course_id = #course_id#
-					and 
+				u.username,
+				u.user_id
+			from users u
+			join enrollments e on u.user_id = e.user_id
+			where e.course_id = #course_id#;
 		</select>
 		
+		<!-- 학생에게 보내기 위해 알림 테이블에 데이터 삽입 -->
+		<insert id="sendNotification">
+			insert into notification (
+				student_id,
+				message
+			) values(
+				#student_id#,
+				#message#
+			)
+		</insert>
 		
 </sqlMap>

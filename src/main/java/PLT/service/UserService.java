@@ -43,4 +43,6 @@ public interface UserService {
 
 	public int deleteMessage(int notification_id) throws Exception;
 
+	public void insert_sub_status_student(String username) throws Exception;
+
 }

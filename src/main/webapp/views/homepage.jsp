@@ -1,6 +1,6 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8"%>
-    <%@ page import="java.io.PrintWriter" %>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page import="java.io.PrintWriter" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <!-- 세션 가져오기 -->
 <%
 	String username = "";
@@ -45,8 +45,18 @@
         rel="stylesheet">
 	<link rel="stylesheet"
 	href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100;200;300;400;500;600;700&display=swap" />
+	    <!-- Bootstrap CSS -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     <!-- Custom styles for this template-->
     <link href="../css/sb-admin-2.min.css" rel="stylesheet">
+
+		<!-- Bootstrap JS -->
+<!-- jQuery 추가 (Ajax사용) -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- 과제 제출 상태를 저장하기 위해 쿠키사용 -->
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/js-cookie/3.0.1/js.cookie.min.js"></script>
+
 
 </head>
 
@@ -368,342 +378,333 @@
                     </ul>
 
                 </nav>
+                    
                 <!-- End of Topbar -->
 
                 <!-- Begin Page Content -->
-                <!-- <div class="container-fluid">
+                <div class="container-fluid">
 
-                    Page Heading
+                    <!-- Page Heading -->
+                    <h1 class="h3 mb-1 text-gray-800">Toy Project</h1>
+                    <span class="mb-4">해당 페이지는 홈페이지입니다.</span>
+                   	<br/>
+                    <span>오른쪽 상단의 <strong>사용자 정보</strong>를 클릭하여 <strong><code>Todo리스트</code></strong>를 작성하고,
+                     <% if(role_id == 2) { %>
+                   	 <strong><code>코스 </code></strong>및 <strong><code>과제</code></strong>를 등록해보세요!! </span> 
+                    <% } else if(role_id ==1) { %>
+                    	<span><strong><code>수강신청 </code></strong>및 <strong><code>수강신청 목록</code></strong>에서 <strong>강의</strong>에 대한 정보를  확인하세요!</span> 
+                    <% } %>
+                    <hr />
+                    <P> 이곳에서 등록된 과제를 확인하세요!!</P>
+                
+                
+                
+				<% if (role_id == 1) { %> <!-- 학생일떄 -->
+                    <!-- Page Heading -->
                     <div class="d-sm-flex align-items-center justify-content-between mb-4">
-                        <h1 class="h3 mb-0 text-gray-800">Dashboard</h1>
-                        <a href="#" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i
-                                class="fas fa-download fa-sm text-white-50"></i> Generate Report</a>
+                        <h1 class="h3 mb-0 text-gray-800">등록된 과제 목록</h1> 
+                        <button type="button" class="btn btn-secondary"
+						        data-bs-toggle="tooltip" data-bs-placement="top"
+						        data-bs-custom-class="custom-tooltip"
+						        data-bs-title="과제의 삭제는 강사만 해당"
+						       	style="background-color: red !important;">
+							 ?
+						</button>
                     </div>
 
-                    Content Row
+                		<!-- 강사가 등록한 과제 현황 -->
+					   <div class="row">
+					    <c:forEach items="${getAssignMentList}" var="aml">
+					        <div class="col-xl-3 col-md-6 mb-4">
+					            <div class="card border-left-primary">
+					                <div class="card-body">
+					                    <div class="row no-gutters align-items-center">
+					                        <div class="col mr-2">
+					                        <input type="hidden" id="assginment_id" value="${aml.assignment_id}">
+					                        <input type="hidden" id="instructor_id" value="${aml.instructor_id}">
+					                        
+					                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+					                                ${aml.title}
+					                            </div>
+					                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+					                                ${aml.description}
+					                            </div>
+					                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+					                                <a>[마감일]</a><br />
+					                                : ${aml.due_date}
+					                            </div>
+					                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+					                                최대 점수 : ${aml.max_grade}
+					                            </div>
+					                        </div>
+					                        <div class="col-auto">
+					                        <c:choose>
+					                        	<c:when test="${aml.sub_status eq 'sub'}">
+					                        		<a class="btn btn-success btn-icon-split" style="position: relative; bottom:-20px;">
+				                                        <span class="icon text-white-50">
+				                                            <i class="fas fa-check"></i>
+				                                        </span>
+				                                        <span class="text">제출완료</span>
+				                                    </a>	 
+				                                    
+				                                    <c:choose>
+				                                    	<c:when test="${not empty aml.rating}">
+				                                    		<div style="position: relative; bottom:65px; left:100px;">
+						                                    	 	<a type="button" onclick="score_info('${aml.rating}' ,'${aml.common}','${aml.f_date }')"
+						                                    	 	data-bs-toggle="tooltip" data-bs-placement="top"
+																		data-bs-custom-class="custom-tooltip"
+																		data-bs-title="클릭하여 채점 결과를 확인하세요!">
+																		<svg xmlns="http://www.w3.org/2000/svg" height="40px"
+																			viewBox="0 -960 960 960" width="40px" fill="#5985E1">
+																			<path
+																				d="M423.33-325.33 702-604l-47.33-47.33L423.33-420 304.67-538.67 258-492l165.33 166.67ZM186.67-120q-27.5 0-47.09-19.58Q120-159.17 120-186.67v-586.66q0-27.5 19.58-47.09Q159.17-840 186.67-840h192.66q7.67-35.33 35.84-57.67Q443.33-920 480-920t64.83 22.33Q573-875.33 580.67-840h192.66q27.5 0 47.09 19.58Q840-800.83 840-773.33v586.66q0 27.5-19.58 47.09Q800.83-120 773.33-120H186.67Zm0-66.67h586.66v-586.66H186.67v586.66Zm293.33-608q13.67 0 23.5-9.83t9.83-23.5q0-13.67-9.83-23.5t-23.5-9.83q-13.67 0-23.5 9.83t-9.83 23.5q0 13.67 9.83 23.5t23.5 9.83Zm-293.33 608v-586.66 586.66Z" /></svg>
+																	</a>
+						                                    </div>
+				                                    	</c:when>
+				                                    	
+				                                    	<c:otherwise>
+				                                    		<div style="position: relative; bottom:65px; left:100px;">
+																	<a type="button" 
+																		data-bs-toggle="tooltip" data-bs-placement="top"
+																		data-bs-custom-class="custom-tooltip"
+																		data-bs-title="해당 과제는 미채점 상태입니다.">
+																		<svg xmlns="http://www.w3.org/2000/svg" height="40px"
+																			viewBox="0 -960 960 960" width="40px" fill="#EA3323">
+																			<path
+																				d="M480-280q15 0 25.83-10.83 10.84-10.84 10.84-25.84t-10.84-25.83Q495-353.33 480-353.33q-15 0-25.83 10.83-10.84 10.83-10.84 25.83 0 15 10.84 25.84Q465-280 480-280Zm-34-141.33h66.67V-680H446v258.67ZM186.67-120q-27.5 0-47.09-19.58Q120-159.17 120-186.67v-586.66q0-27.5 19.58-47.09Q159.17-840 186.67-840h192.66q7.67-35.33 35.84-57.67Q443.33-920 480-920t64.83 22.33Q573-875.33 580.67-840h192.66q27.5 0 47.09 19.58Q840-800.83 840-773.33v586.66q0 27.5-19.58 47.09Q800.83-120 773.33-120H186.67Zm0-66.67h586.66v-586.66H186.67v586.66Zm293.33-608q13.67 0 23.5-9.83t9.83-23.5q0-13.67-9.83-23.5t-23.5-9.83q-13.67 0-23.5 9.83t-9.83 23.5q0 13.67 9.83 23.5t23.5 9.83Zm-293.33 608v-586.66 586.66Z" /></svg>
+																	</a>
+																</div>
+				                                    	</c:otherwise>
+				                                    </c:choose>
+				                                    </c:when> 
+					                                    <c:otherwise>
+						                        		  <a type="button"
+								                               onclick="show_submission_form(${aml.assignment_id}, '${aml.title}', '${aml.description}',${aml.instructor_id})"
+								                               id="st" data-assignment-id="${aml.assignment_id}">
+								                                <i class="fas fa-calendar fa-2x text-gray-300"></i>
+								                            </a>
+						                        	</c:otherwise>
+						                        	</c:choose>
+						                        	
+						                        	
+					                        </div>
+					                    </div>
+					                </div>
+					            </div>
+					        </div>
+					    </c:forEach>	
+					</div>
+			
+			
+			    <!-- 하나의 과제 제출 폼 -->
+			    <div class="col-lg-4 mb-4" id="submission_form" style="display:none; margin-top: 20px;">
+			        <div class="card shadow h-100 py-2">
+			            <div class="card-body">
+			                <h5 class="text-center font-weight-bold">과제 작성 및 제출</h5>
+			                <form id="assignmentForm">
+			                	<input type="hidden" id="assignment_Id">
+			                    <div class="form-group">
+			                        <label for="assignmentTitle">과제 제목</label>
+			                        <input type="text" class="form-control" id="assignmentTitle" placeholder="제목을 입력하세요">
+			                    </div>
+			                    <div class="form-group">
+			                        <label for="assignmentDescription">과제 내용</label>
+			                        <textarea class="form-control" id="assignmentDescription" rows="3" placeholder="설명을 입력하세요"></textarea>
+			                    </div>
+			                    <div class="form-group">
+			                        <label for="assignmentFile">파일 첨부</label>
+			                        <div class="input-group">
+			                            <input type="file" class="form-control-file" id="assignmentFile" name="assignmentFile">
+			                            <a onclick="fileDelete()" class="file-delete">삭제</a>
+			                        </div>
+			                    </div>
+			                    <button type="button" class="btn btn-primary" onclick="formRegistration()">과제 제출</button>
+			                </form>
+			            </div>
+			        </div>
+			    </div>
+			<% } else if(role_id == 2) {%> <!-- 강사일때 -->
+			<!-- Page Heading -->
+                    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+                        <h1 class="h3 mb-0 text-gray-800">제출된 과제 목록</h1>
+                    </div>
+                    
+                    <!-- 학생이 제출한 과제 현황 -->
                     <div class="row">
-
-                        Earnings (Monthly) Card Example
-                        <div class="col-xl-3 col-md-6 mb-4">
-                            <div class="card border-left-primary shadow h-100 py-2">
-                                <div class="card-body">
-                                    <div class="row no-gutters align-items-center">
-                                        <div class="col mr-2">
-                                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                                                Earnings (Monthly)</div>
-                                            <div class="h5 mb-0 font-weight-bold text-gray-800">$40,000</div>
-                                        </div>
-                                        <div class="col-auto">
-                                            <i class="fas fa-calendar fa-2x text-gray-300"></i>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        Earnings (Monthly) Card Example
-                        <div class="col-xl-3 col-md-6 mb-4">
-                            <div class="card border-left-success shadow h-100 py-2">
-                                <div class="card-body">
-                                    <div class="row no-gutters align-items-center">
-                                        <div class="col mr-2">
-                                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
-                                                Earnings (Annual)</div>
-                                            <div class="h5 mb-0 font-weight-bold text-gray-800">$215,000</div>
-                                        </div>
-                                        <div class="col-auto">
-                                            <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        Earnings (Monthly) Card Example
-                        <div class="col-xl-3 col-md-6 mb-4">
-                            <div class="card border-left-info shadow h-100 py-2">
-                                <div class="card-body">
-                                    <div class="row no-gutters align-items-center">
-                                        <div class="col mr-2">
-                                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Tasks
-                                            </div>
-                                            <div class="row no-gutters align-items-center">
-                                                <div class="col-auto">
-                                                    <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800">50%</div>
-                                                </div>
-                                                <div class="col">
-                                                    <div class="progress progress-sm mr-2">
-                                                        <div class="progress-bar bg-info" role="progressbar"
-                                                            style="width: 50%" aria-valuenow="50" aria-valuemin="0"
-                                                            aria-valuemax="100"></div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-auto">
-                                            <i class="fas fa-clipboard-list fa-2x text-gray-300"></i>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        Pending Requests Card Example
-                        <div class="col-xl-3 col-md-6 mb-4">
-                            <div class="card border-left-warning shadow h-100 py-2">
-                                <div class="card-body">
-                                    <div class="row no-gutters align-items-center">
-                                        <div class="col mr-2">
-                                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
-                                                Pending Requests</div>
-                                            <div class="h5 mb-0 font-weight-bold text-gray-800">18</div>
-                                        </div>
-                                        <div class="col-auto">
-                                            <i class="fas fa-comments fa-2x text-gray-300"></i>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    Content Row
-
-                    <div class="row">
-
-                        Area Chart
-                        <div class="col-xl-8 col-lg-7">
-                            <div class="card shadow mb-4">
-                                Card Header - Dropdown
-                                <div
-                                    class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                                    <h6 class="m-0 font-weight-bold text-primary">Earnings Overview</h6>
-                                    <div class="dropdown no-arrow">
-                                        <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
-                                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                            <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
-                                        </a>
-                                        <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in"
-                                            aria-labelledby="dropdownMenuLink">
-                                            <div class="dropdown-header">Dropdown Header:</div>
-                                            <a class="dropdown-item" href="#">Action</a>
-                                            <a class="dropdown-item" href="#">Another action</a>
-                                            <div class="dropdown-divider"></div>
-                                            <a class="dropdown-item" href="#">Something else here</a>
-                                        </div>
-                                    </div>
-                                </div>
-                                Card Body
-                                <div class="card-body">
-                                    <div class="chart-area">
-                                        <canvas id="myAreaChart"></canvas>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        Pie Chart
-                        <div class="col-xl-4 col-lg-5">
-                            <div class="card shadow mb-4">
-                                Card Header - Dropdown
-                                <div
-                                    class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                                    <h6 class="m-0 font-weight-bold text-primary">Revenue Sources</h6>
-                                    <div class="dropdown no-arrow">
-                                        <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
-                                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                            <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
-                                        </a>
-                                        <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in"
-                                            aria-labelledby="dropdownMenuLink">
-                                            <div class="dropdown-header">Dropdown Header:</div>
-                                            <a class="dropdown-item" href="#">Action</a>
-                                            <a class="dropdown-item" href="#">Another action</a>
-                                            <div class="dropdown-divider"></div>
-                                            <a class="dropdown-item" href="#">Something else here</a>
-                                        </div>
-                                    </div>
-                                </div>
-                                Card Body
-                                <div class="card-body">
-                                    <div class="chart-pie pt-4 pb-2">
-                                        <canvas id="myPieChart"></canvas>
-                                    </div>
-                                    <div class="mt-4 text-center small">
-                                        <span class="mr-2">
-                                            <i class="fas fa-circle text-primary"></i> Direct
-                                        </span>
-                                        <span class="mr-2">
-                                            <i class="fas fa-circle text-success"></i> Social
-                                        </span>
-                                        <span class="mr-2">
-                                            <i class="fas fa-circle text-info"></i> Referral
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    Content Row
-                    <div class="row">
-
-                        Content Column
-                        <div class="col-lg-6 mb-4">
-
-                            Project Card Example
-                            <div class="card shadow mb-4">
-                                <div class="card-header py-3">
-                                    <h6 class="m-0 font-weight-bold text-primary">Projects</h6>
-                                </div>
-                                <div class="card-body">
-                                    <h4 class="small font-weight-bold">Server Migration <span
-                                            class="float-right">20%</span></h4>
-                                    <div class="progress mb-4">
-                                        <div class="progress-bar bg-danger" role="progressbar" style="width: 20%"
-                                            aria-valuenow="20" aria-valuemin="0" aria-valuemax="100"></div>
-                                    </div>
-                                    <h4 class="small font-weight-bold">Sales Tracking <span
-                                            class="float-right">40%</span></h4>
-                                    <div class="progress mb-4">
-                                        <div class="progress-bar bg-warning" role="progressbar" style="width: 40%"
-                                            aria-valuenow="40" aria-valuemin="0" aria-valuemax="100"></div>
-                                    </div>
-                                    <h4 class="small font-weight-bold">Customer Database <span
-                                            class="float-right">60%</span></h4>
-                                    <div class="progress mb-4">
-                                        <div class="progress-bar" role="progressbar" style="width: 60%"
-                                            aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"></div>
-                                    </div>
-                                    <h4 class="small font-weight-bold">Payout Details <span
-                                            class="float-right">80%</span></h4>
-                                    <div class="progress mb-4">
-                                        <div class="progress-bar bg-info" role="progressbar" style="width: 80%"
-                                            aria-valuenow="80" aria-valuemin="0" aria-valuemax="100"></div>
-                                    </div>
-                                    <h4 class="small font-weight-bold">Account Setup <span
-                                            class="float-right">Complete!</span></h4>
-                                    <div class="progress">
-                                        <div class="progress-bar bg-success" role="progressbar" style="width: 100%"
-                                            aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            Color System
-                            <div class="row">
-                                <div class="col-lg-6 mb-4">
-                                    <div class="card bg-primary text-white shadow">
-                                        <div class="card-body">
-                                            Primary
-                                            <div class="text-white-50 small">#4e73df</div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-lg-6 mb-4">
-                                    <div class="card bg-success text-white shadow">
-                                        <div class="card-body">
-                                            Success
-                                            <div class="text-white-50 small">#1cc88a</div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-lg-6 mb-4">
-                                    <div class="card bg-info text-white shadow">
-                                        <div class="card-body">
-                                            Info
-                                            <div class="text-white-50 small">#36b9cc</div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-lg-6 mb-4">
-                                    <div class="card bg-warning text-white shadow">
-                                        <div class="card-body">
-                                            Warning
-                                            <div class="text-white-50 small">#f6c23e</div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-lg-6 mb-4">
-                                    <div class="card bg-danger text-white shadow">
-                                        <div class="card-body">
-                                            Danger
-                                            <div class="text-white-50 small">#e74a3b</div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-lg-6 mb-4">
-                                    <div class="card bg-secondary text-white shadow">
-                                        <div class="card-body">
-                                            Secondary
-                                            <div class="text-white-50 small">#858796</div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-lg-6 mb-4">
-                                    <div class="card bg-light text-black shadow">
-                                        <div class="card-body">
-                                            Light
-                                            <div class="text-black-50 small">#f8f9fc</div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-lg-6 mb-4">
-                                    <div class="card bg-dark text-white shadow">
-                                        <div class="card-body">
-                                            Dark
-                                            <div class="text-white-50 small">#5a5c69</div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                        </div>
-
-                        <div class="col-lg-6 mb-4">
-
-                            Illustrations
-                            <div class="card shadow mb-4">
-                                <div class="card-header py-3">
-                                    <h6 class="m-0 font-weight-bold text-primary">Illustrations</h6>
-                                </div>
-                                <div class="card-body">
-                                    <div class="text-center">
-                                        <img class="img-fluid px-3 px-sm-4 mt-3 mb-4" style="width: 25rem;"
-                                            src="img/undraw_posting_photo.svg" alt="...">
-                                    </div>
-                                    <p>Add some quality, svg illustrations to your project courtesy of <a
-                                            target="_blank" rel="nofollow" href="https://undraw.co/">unDraw</a>, a
-                                        constantly updated collection of beautiful svg images that you can use
-                                        completely free and without attribution!</p>
-                                    <a target="_blank" rel="nofollow" href="https://undraw.co/">Browse Illustrations on
-                                        unDraw &rarr;</a>
-                                </div>
-                            </div>
-
-                            Approach
-                            <div class="card shadow mb-4">
-                                <div class="card-header py-3">
-                                    <h6 class="m-0 font-weight-bold text-primary">Development Approach</h6>
-                                </div>
-                                <div class="card-body">
-                                    <p>SB Admin 2 makes extensive use of Bootstrap 4 utility classes in order to reduce
-                                        CSS bloat and poor page performance. Custom CSS classes are used to create
-                                        custom components and custom utility classes.</p>
-                                    <p class="mb-0">Before working with this theme, you should become familiar with the
-                                        Bootstrap framework, especially the utility classes.</p>
-                                </div>
-                            </div>
-
-                        </div>
-                    </div>
-
-                </div> -->
-                <!-- /.container-fluid -->
-
-            </div>
+					    <c:forEach items="${getSubmissionsList}" var="sml">
+					    <input type="hidden" id="submissions_id" value="${sml.submissions_id}"> <!-- 과제 제출 테이블 고유 아이디 -->
+					    <input type="hidden" id="Assignment_id" value="${sml.assignment_id}"> <!-- 피드백 위한 아이디 -->
+					    	<input type="hidden" id="title" value="${sml.title }"> <!-- 제출한 과제 제목 -->
+					    	<input type="hidden" id="content" value="${sml.content }">	<!-- 제출한 과제 내용 -->
+					    	<input type="hidden" id="student_id" value="${sml.student_id }"> <!-- 과제를 제출한 학생 아이디-->
+					    	<input type="hidden" id="f_origin_name" value="${sml.f_origin_name }"> <!-- 제출한 과제 첨부파일 -->
+					    	<input type="hidden" id="submitted_at" value="${sml.submitted_at }"> <!-- 과제 제출한 시간-->
+					    
+					        <div class="col-xl-3 col-md-6 mb-4">
+					            <div class="card border-left-primary">
+					                <div class="card-body">
+					                    <div class="row no-gutters align-items-center">
+					                        <div class="col mr-2">
+					                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+					                                ${sml.title}
+					                            </div>
+					                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+					                                ${sml.content}
+					                            </div>
+					                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+					                                <a>[제출일]</a><br />
+					                                : ${sml.submitted_at}
+					                            </div>
+					                            <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">
+					                                	첨부파일 : 
+					                                	<c:choose>
+					                                		<c:when test="${not empty sml.f_origin_name}">
+					                                			<a type="button">${sml.f_origin_name}</a>
+					                                		</c:when>
+					                                		
+					                                		<c:otherwise>
+					                                			<a>첨부파일 미제출</a>
+					                                		</c:otherwise>
+					                                	</c:choose>
+					                                	
+					                            </div>
+					                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+					                                	<c:choose>
+					                                		<c:when test="${not empty sml.grade}">
+					                                			부여 점수 : ${sml.grade}
+					                                		</c:when>
+					                                		
+					                                		<c:otherwise>
+					                                			<a>부여 점수 : 미채점 상태</a>
+					                                		</c:otherwise>
+					                                	</c:choose>
+					                            </div>
+					                        </div>
+					                        <div class="col-auto">
+					                        <c:choose>
+					                        	<c:when test="${sml.status eq 'sub'}">
+														<a class="btn btn-info btn-icon-split"  id="give_score"
+															data-submissions-id="${sml.submissions_id}"
+															data-toggle="modal"
+															onclick="give_score(${sml.submissions_id},'${sml.title }','${sml.content }', ${sml.student_id },'${sml.f_origin_name }','${sml.submitted_at }' ,${sml.assignment_id})"> 
+															<span class="text"> <i class="fas fa-info-circle"></i> 
+															<strong>미채점</strong>
+														</span>
+														</a>
+														<a onclick="trash_this(${sml.submissions_id});" class="btn btn-danger btn-icon-split">
+					                                        <span class="icon text-white-50">
+					                                            <i class="fas fa-trash"></i>
+					                                        </span>
+					                                    </a>
+													</c:when>
+					                        	<c:otherwise>
+							                            <a class="btn btn-info btn-icon-split">
+				                                        <span class="icon text-white-50">
+				                                            <i class="fas fa-check"></i>
+				                                        </span>
+				                                        <span class="text">채점완료</span>
+				                                    </a>	
+				                                     <a onclick="trash_this(${sml.submissions_id});" class="btn btn-danger btn-icon-split">
+					                                        <span class="icon text-white-50">
+					                                            <i class="fas fa-trash"></i>
+					                                        </span>
+					                                    </a>
+					                        	</c:otherwise>
+					                        </c:choose>
+					                        </div>
+					                    </div>
+					                </div>
+					            </div>
+					        </div>
+					    </c:forEach>	
+					</div>
+                    
+			<%} %>
+			
+				<!-- 강사의 점수부여 및 피드백 모달창 -->
+                <div class="modal fade" data-backdrop="static" id="score_feedbackModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+				  <div class="modal-dialog">
+				    <div class="modal-content">
+				      <div class="modal-header">
+				        <h1 class="modal-title fs-5" id="exampleModalLabel">과제 채점</h1>
+				      </div>
+				      <div class="modal-body">
+					        <form>
+					        <input type="hidden" id="s_submissions_id">
+					        <input type="hidden" id="s_student_id">
+					        <div class="row">
+						        <div class="mb-3">
+						            <label for="recipient-name" class="col-form-label">제출한 과제 제목:</label>
+						            <input type="text" class="form-control" id="s_title" disabled>
+							            <input type="hidden" id="aaa_id">
+						          </div>
+						            <div class="mb-3">
+						            <label for="recipient-name" class="col-form-label">제출한 과제 내용:</label>
+						            <textarea class="form-control" class="form-control" id="s_content" disabled></textarea>
+						          </div>
+						          
+						            <div class="mb-3">
+						            <label for="recipient-name" class="col-form-label">첨부파일:</label>
+						            <input type="text" class="form-control" id="s_f_origin_name" disabled>
+						          </div>
+						            <div class="mb-3">
+						            <label for="recipient-name" class="col-form-label">제출한 일자:</label>
+						            <input type="text" class="form-control" id="s_submitted_at" disabled>
+						          </div>
+						          <div class="mb-3">
+						            <label for="recipient-name" class="col-form-label">부여 점수:</label>
+						            <input type="number" class="form-control" id="s_rating">
+						          </div>
+						          <div class="mb-3">
+						            <label for="message-text" class="col-form-label">피드백:</label>
+						            <textarea class="form-control" id="s_feedback"></textarea>
+						          </div>
+					        </div>
+					        </form>
+					      </div>
+					      <div class="modal-footer">
+					      <button type="button" class="btn btn-primary" onclick="give_score_to_student()">채점</button>
+					        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">X</button>
+					      </div>
+				    </div>
+				  </div>
+				</div>
+                
+                
+                
+                
+                <!-- 강사가 채점한 과제 정보 -->
+                <div class="modal fade" data-backdrop="static" id="scre_info" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+				  <div class="modal-dialog">
+				    <div class="modal-content">
+				      <div class="modal-header">
+				        <h1 class="modal-title fs-5" id="exampleModalLabel">채점 정보</h1>
+				      </div>
+				      <div class="modal-body">
+						        <div class="mb-3">
+						            <div class="mb-3">
+						            <label for="recipient-name" class="col-form-label">채점완료 일자:</label>
+						            <input type="text" class="form-control" id="score_completed_date" disabled>
+						          </div>
+						          <div class="mb-3">
+						            <label for="recipient-name" class="col-form-label">최종 점수:</label>
+						            <input type="number" class="form-control" id="finally_score" disabled>
+						          </div>
+						          <div class="mb-3">
+						            <label for="message-text" class="col-form-label">피드백:</label>
+						            <textarea class="form-control" id="finally_feedback" disabled></textarea>
+						          </div>
+					        </div>
+					      <div class="modal-footer">
+					        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">X</button>
+					      </div>
+				    </div>
+				  </div>
+				</div>
+                
+            
+           </div>
             <!-- End of Main Content -->
-
             <!-- Footer -->
             <footer class="sticky-footer bg-white">
                 <div class="container my-auto">
@@ -713,7 +714,6 @@
                 </div>
             </footer>
             <!-- End of Footer -->
-
         </div>
         <!-- End of Content Wrapper -->
 
@@ -746,162 +746,26 @@
     </div>
 
 
-
 <script>
-window.onload = function() {
-    getMessage();
-};
 
-/* 페이지 로드 시, 알람메시지 가져오기 */
-function getMessage(){
-    var username = document.getElementById('username').value;
-    $.ajax({
-        data : {username : username},
-        dataType:"json",
-        type:"POST",
-        url:"/PLT/getMessage.do",
-        success:function(response){
-            var showMessageDiv = $(".dropdown-list"); // 드롭다운 리스트를 선택
-            showMessageDiv.empty(); // 이전 내용을 지우기
-
-            if (response.status === "ok") {
-                alert("도착한 알림 메시지가 있습니다.");
-				console.log("dd :"+JSON.stringify(response.data, null, 2))
-                // response.data를 순회하며 각 메시지를 추가
-               for (let i = 0; i < response.data.length; i++) {
-					    var successORwarning = response.data[i].read === "t" ? 'bg-success' : 'bg-warning';
-					    
-					    var showMessageView =
-					        '<a class="dropdown-item d-flex align-items-center" onclick="is_read(' + response.data[i].notification_id + ')" id="showMessage' + response.data[i].notification_id + '">' +
-					            '<div class="dropdown-list-image mr-3">' +
-					                '<span class="material-symbols-outlined">' +
-					                    'wifi_notification' +
-					                '</span>' +
-					                '<div class="status-indicator ' + successORwarning + '" id="sta'+response.data[i].notification_id+'"></div>' +
-					            '</div>' +
-					            '<div class="font-weight-bold">' +
-					                '<div class="text-truncate">' +
-					                    response.data[i].message +
-					                '</div>' +
-					                '<div class="small text-gray-500">보낸 강사 이름</div>' +
-					            '</div>' +
-					            '<button class="btn btn-danger btn-sm ml-auto" onclick="deleteMessage(' + response.data[i].notification_id + '); event.stopPropagation();">삭제</button>' +
-					        '</a>';
-					    
-					    showMessageDiv.append(showMessageView); // 각 메시지를 드롭다운 리스트에 추가
-					}
-                var messageCount = showMessageDiv.children().length;
-                var messageCountView = document.getElementById('messageCount');
-                messageCountView.textContent = messageCount;
-            }else if(response.status === "noM") {
-                return;
-            }else if(response.status === "sqlError"){
-                alert("DB에서 알람메시지를 가져오는 도중 오류 발생...");
-                return;
-            }
-        },
-        error: function(jqXHR, textStatus, errorThrown) {
-            console.error("Error details: ", textStatus, errorThrown);
-            alert("알람 메시지 수신 중 오류 발생...");
-        }
+    // 툴팁 활성화
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl);
     });
-}
-
-// 알람 메시지 읽음 표시
-// 알람 메시지 읽음 표시
-function is_read(notification_id) {
-    $.ajax({
-        url: "/PLT/is_read.do", // 실제 경로에 맞게 수정
-        data: { notification_id: notification_id },
-        dataType: "json",
-        type: "POST",
-        success: function(response) {
-            console.log("끼야아 : " + response.TF);
-            if (response.status === "get_read_t") {
-                // 클릭한 메시지의 상태를 업데이트
-                var statusIndicator = $("#sta" + notification_id); // 해당 메시지의 상태 인디케이터 선택
-                var cs = response.TF; // "t" 또는 "f"
-                
-                // 상태에 따라 클래스 변경
-                if (cs === "t") {
-                    statusIndicator.removeClass('bg-warning').addClass('bg-success');
-                } else {
-                    statusIndicator.removeClass('bg-success').addClass('bg-warning');
-                }
-            } else if (response.status === "get_read_f") {
-                // 클릭한 메시지의 상태를 업데이트
-                var statusIndicator = $("#sta" + notification_id); // 해당 메시지의 상태 인디케이터 선택
-                var cs = response.TF; // "t" 또는 "f"
-                
-                // 상태에 따라 클래스 변경
-                if (cs === "f") {
-                    statusIndicator.removeClass('bg-success').addClass('bg-warning');
-                } else {
-                    statusIndicator.removeClass('bg-warning').addClass('bg-success');
-                }
-            } else if (response.status === "update_fail") {
-                alert("읽기 표시 DB 업데이트 실패");
-                return;
-            }
-        },
-        error: function() {
-            alert("알람 표시 중 서버 오류 발생!!");
-        }
-    });
-}
-
-/* 해당 알림 메시지 삭제 */
- function deleteMessage(notification_id){
-    $.ajax({
-        url:"/PLT/deleteMessage.do",
-        data:{notification_id:notification_id},
-        dataType:"json",
-        type:"POST",
-        success:function(response){
-            if(response === "ok"){
-                alert("해당 알림을 삭제했습니다.");
-                location.href="/PLT/plt_homepage.do";
-            }else if(response === "fail"){
-                alert("해당 알림 삭제가 처리되지 않았습니다.");
-                return;
-            }
-        },
-        error:function(){
-            alert("알람 메시지 삭제 중, 서버 오류 발생!!");
-            return;
-        }
-    })
-}
-
-
-function logout(){
-    if (confirm("정말 로그아웃을 하시겠습니까??")) {
-        // 확인 버튼을 눌렀을 때 실행될 코드
-        alert("로그아웃 되었습니다.");
-        location.href="/PLT/logout.do";
-    } else {
-        // 취소 버튼을 눌렀을 때 실행될 코드
-        alert("로그아웃을 취소하였습니다.");
-    }
-}
 </script>
+	
+	<!-- Bootstrap JS (로컬 로드가 필요하다면 중복 로드하지 않도록 주의) -->
+	<script src="../vendor/bootstrap/js/bootstrap.bundle.min.js"></script> 
+	<!-- Core plugin JavaScript -->
+	<script src="../vendor/jquery-easing/jquery.easing.min.js"></script>
+	
+	<!-- Custom scripts for all pages -->
+	<script src="../js/sb-admin-2.min.js"></script>
+	
+	<!-- Custom scripts for homepage -->
+	<script src="../js/homepage/homepage.js"></script>
 
-    <!-- Bootstrap core JavaScript-->
-    <script src="../vendor/jquery/jquery.min.js"></script>
-    <script src="../vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-
-    <!-- Core plugin JavaScript-->
-    <script src="../vendor/jquery-easing/jquery.easing.min.js"></script>
-
-    <!-- Custom scripts for all pages-->
-    <script src="../js/sb-admin-2.min.js"></script>
-
-    <!-- Page level plugins -->
-    <script src="../vendor/chart.js/Chart.min.js"></script>
-
-    <!-- Page level custom scripts -->
-    <script src="../js/demo/chart-area-demo.js"></script>
-    <script src="../js/demo/chart-pie-demo.js"></script>
 
 </body>
 

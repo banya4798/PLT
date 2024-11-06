@@ -82,4 +82,8 @@ public class UserDAO extends EgovAbstractDAO {
 		return delete("deleteMessage", notification_id);
 	}
 
+	public void insert_sub_status_student(String username) {
+		insert("insert_sub_status_student", username);
+	}
+
 }

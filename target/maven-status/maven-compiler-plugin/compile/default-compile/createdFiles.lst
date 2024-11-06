@@ -1,8 +1,10 @@
 PLT\controller\TodoController.class
+PLT\service\impl\NotificationImpl.class
 PLT\service\impl\UserServiceImpl.class
 PLT\controller\AssignmentController.class
 PLT\service\UserService.class
 PLT\service\impl\EnrollmentImpl.class
+PLT\vo\SubmissionsVO.class
 PLT\vo\FileVO.class
 PLT\vo\AssignmentVO.class
 PLT\dao\CourseDAO.class
@@ -18,6 +20,8 @@ PLT\vo\UserVO.class
 PLT\service\impl\AssignmentImpl.class
 PLT\service\AssignmentService.class
 PLT\service\impl\ModuleServiceImpl.class
+PLT\service\NotificationService.class
+PLT\vo\NotificationVO.class
 PLT\SHA256.class
 PLT\service\LessonService.class
 PLT\vo\Enrollment_registrationVO.class
@@ -42,3 +46,4 @@ PLT\service\EnrollmentService.class
 PLT\controller\LessonController.class
 PLT\service\CourseService.class
 PLT\vo\CourseVO.class
+PLT\vo\Submission_FileVO.class

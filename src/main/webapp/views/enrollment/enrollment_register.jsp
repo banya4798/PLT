@@ -647,10 +647,7 @@ if (session.getAttribute("role_id") != null) {
 				<div class="modal-body_file">
 					<hr>
 					<div class="mb-3 d-flex" >
-					
 					</div>
-
-				
 				</div>
 				<!-- /Body -->
 
